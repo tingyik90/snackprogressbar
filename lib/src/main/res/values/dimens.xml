@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- general -->
+    <dimen name="padding_8x">64dp</dimen>
+    <dimen name="padding_5x">40dp</dimen>
+    <dimen name="padding_4x">32dp</dimen>
+    <dimen name="padding_3x">24dp</dimen>
+    <dimen name="padding_2x">16dp</dimen>
+    <dimen name="padding_1x">8dp</dimen>
+
+    <!-- snackBar -->
+    <dimen name="snackBar_height_single">48dp</dimen>
+    <dimen name="snackBar_height_multi">80dp</dimen>
+    <dimen name="snackBar_padding_left_right">24dp</dimen>
+    <dimen name="snackBar_padding_top_bottom_single">14dp</dimen>
+    <dimen name="snackBar_padding_top_bottom_multi">24dp</dimen>
+    <dimen name="snackBar_size_progressbar_indeterminate">32dp</dimen>
+
+    <!-- text -->
+    <dimen name="text_body">14sp</dimen>
+
+</resources>

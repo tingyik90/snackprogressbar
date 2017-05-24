@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- snackbar -->
+    <color name="snackBar_background">#FF323232</color>
+    <color name="colorAccent">?attr/colorAccent</color>
+
+    <!-- text colour -->
+    <color name="textWhitePrimary">#FFFFFFFF</color>
+</resources>
