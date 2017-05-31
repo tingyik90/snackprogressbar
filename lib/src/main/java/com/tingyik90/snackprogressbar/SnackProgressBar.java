@@ -8,16 +8,31 @@ import java.lang.annotation.Retention;
 
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 
+/**
+ * Main class containing the display information of SnackProgressBar to be displayed
+ * via SnackProgressBarManager.
+ */
 public class SnackProgressBar {
 
     @Retention(SOURCE)
     @IntDef({TYPE_ACTION, TYPE_DETERMINATE, TYPE_INDETERMINATE, TYPE_MESSAGE})
-    public @interface Type {
-    }
+    @interface Type {}
 
+    /**
+     * SnackProgressBar layout with message and action button.
+     */
     public static final int TYPE_ACTION = 100;
+    /**
+     * SnackProgressBar layout with message, determinate progressBar and progress percentage.
+     */
     public static final int TYPE_DETERMINATE = 200;
+    /**
+     * SnackProgressBar layout with message and indeterminate progressBar.
+     */
     public static final int TYPE_INDETERMINATE = 300;
+    /**
+     * SnackProgressBar layout with message only.
+     */
     public static final int TYPE_MESSAGE = 400;
 
     /* variables */
@@ -30,21 +45,56 @@ public class SnackProgressBar {
     private String action = "";
     private String message = "";
 
-    private static final String DEBUG_TAG = "SnackProgressBar";
-
-    /* constructors */
+    /**
+     * Constructor.
+     *
+     * @param type    SnackProgressBar of either
+     *                {@link #TYPE_ACTION}, {@link #TYPE_DETERMINATE}, {@link #TYPE_INDETERMINATE} or {@link #TYPE_MESSAGE}
+     * @param message Message of SnackProgressBar.
+     * @param id      Unique id for the SnackProgressBar. See {@link SnackProgressBarManager#add(SnackProgressBar)}.
+     */
     public SnackProgressBar(@Type int type, @NonNull String message, @IntRange(from = 1) int id) {
-        this.id = id;
         this.type = type;
         this.message = message;
+        this.id = id;
+    }
+
+    /* Internal constructor for duplicating SnackProgressBar */
+    SnackProgressBar(int type, @NonNull String message, int id,
+                     boolean allowUserInput, boolean swipeToDismiss, boolean showProgressPercentage,
+                     int progressMax, String action) {
+        this.type = type;
+        this.message = message;
+        this.id = id;
+        this.allowUserInput = allowUserInput;
+        this.swipeToDismiss = swipeToDismiss;
+        this.showProgressPercentage = showProgressPercentage;
+        this.progressMax = progressMax;
+        this.action = action;
+    }
+
+    /**
+     * Set whether user input is allowed. Setting to TRUE will display the OverlayLayout which blocks user input.
+     *
+     * @param allowUserInput Whether to allow user input. Default = FALSE.
+     */
+    public SnackProgressBar setAllowUserInput(boolean allowUserInput) {
+        this.allowUserInput = allowUserInput;
+        return this;
     }
 
     public boolean isAllowUserInput() {
         return allowUserInput;
     }
 
-    public SnackProgressBar setAllowUserInput(boolean allowUserInput) {
-        this.allowUserInput = allowUserInput;
+    /**
+     * Set whether user can swipe to dismiss.
+     * This only works for TYPE_ACTION and TYPE_MESSAGE.
+     *
+     * @param swipeToDismiss Whether user can swipe to dismiss. Default = FALSE.
+     */
+    public SnackProgressBar setSwipeToDismiss(boolean swipeToDismiss) {
+        this.swipeToDismiss = swipeToDismiss;
         return this;
     }
 
@@ -52,8 +102,13 @@ public class SnackProgressBar {
         return swipeToDismiss;
     }
 
-    public SnackProgressBar setSwipeToDismiss(boolean swipeToDismiss) {
-        this.swipeToDismiss = swipeToDismiss;
+    /**
+     * Set whether to show progressText. Only will be shown for TYPE_DETERMINATE.
+     *
+     * @param showProgressPercentage Whether to show progressText. Default = TRUE.
+     */
+    public SnackProgressBar setShowProgressPercentage(boolean showProgressPercentage) {
+        this.showProgressPercentage = showProgressPercentage;
         return this;
     }
 
@@ -61,26 +116,21 @@ public class SnackProgressBar {
         return showProgressPercentage;
     }
 
-    public SnackProgressBar setShowProgressPercentage(boolean showProgressPercentage) {
-        this.showProgressPercentage = showProgressPercentage;
-        return this;
-    }
-
     public int getId() {
         return id;
-    }
-
-    public SnackProgressBar setId(@IntRange(from = 1) int id) {
-        this.id = id;
-        return this;
     }
 
     public int getType() {
         return type;
     }
 
-    public SnackProgressBar setType(int type) {
-        this.type = type;
+    /**
+     * Set the max progress for progressBar. Only will be shown for TYPE_DETERMINATE.
+     *
+     * @param progressMax Max progress for progressBar. Default = 100.
+     */
+    public SnackProgressBar setProgressMax(@IntRange(from = 1) int progressMax) {
+        this.progressMax = progressMax;
         return this;
     }
 
@@ -88,8 +138,13 @@ public class SnackProgressBar {
         return progressMax;
     }
 
-    public SnackProgressBar setProgressMax(@IntRange(from = 1) int progressMax) {
-        this.progressMax = progressMax;
+    /**
+     * Set action. Only will be shown for TYPE_ACTION.
+     *
+     * @param action Action to be displayed.
+     */
+    public SnackProgressBar setAction(@NonNull String action) {
+        this.action = action;
         return this;
     }
 
@@ -97,18 +152,18 @@ public class SnackProgressBar {
         return action;
     }
 
-    public SnackProgressBar setAction(@NonNull String action) {
-        this.action = action;
+    /**
+     * Set message.
+     *
+     * @param message Message of SnackProgressBar.
+     */
+    public SnackProgressBar setMessage(@NonNull String message) {
+        this.message = message;
         return this;
     }
 
     public String getMessage() {
         return message;
-    }
-
-    public SnackProgressBar setMessage(@NonNull String message) {
-        this.message = message;
-        return this;
     }
 
     @Override

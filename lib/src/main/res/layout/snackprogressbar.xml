@@ -26,7 +26,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:animateLayoutChanges="true"
         android:clickable="true"
         android:focusable="false"
         android:focusableInTouchMode="false"
@@ -49,27 +48,27 @@
         <LinearLayout
             android:id="@+id/snackProgressBar_layout_snackBar"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/snackBar_height_single"
-            android:animateLayoutChanges="true"
+            android:layout_height="wrap_content"
             android:background="@color/snackBar_background"
             android:clickable="true"
             android:longClickable="true"
-            android:visibility="visible"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:visibility="visible">
 
             <TextView
                 android:id="@+id/snackProgressBar_txt_message"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="@dimen/snackBar_height_single"
                 android:layout_gravity="center"
-                android:paddingLeft="@dimen/snackBar_padding_left_right"
-                android:paddingRight="@dimen/snackBar_padding_left_right"
                 android:layout_weight="100"
                 android:clickable="false"
                 android:gravity="center_vertical"
                 android:longClickable="false"
+                android:paddingLeft="@dimen/snackBar_padding_left_right"
+                android:paddingRight="@dimen/snackBar_padding_left_right"
                 android:textColor="@color/textWhitePrimary"
-                android:textSize="@dimen/text_body" />
+                android:textSize="@dimen/text_body"
+                android:visibility="visible" />
 
             <TextView
                 android:id="@+id/snackProgressBar_txt_progress"

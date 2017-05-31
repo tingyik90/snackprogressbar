@@ -9,7 +9,6 @@ import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.VelocityTrackerCompat;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -26,50 +25,53 @@ import java.util.HashMap;
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 /**
- * Manager class handling all the SnackProgressBars added into queue.
+ * Manager class handling all the SnackProgressBars added.
  * It adds a RelativeLayout on top of the current activity.
- * There is only ONE instance of this layout.
+ * <p>
+ * There is only ONE instance of this layout (called "MainLayout" here).
  * All actions of showing, hiding and updating the SnackProgressBar are
  * reflected via this layout i.e. no new layout drawn.
+ * </p>
+ * <p>
+ * This class queues the SnackProgressBars to be shown.
+ * It will dismiss the SnackProgressBar according to its desired duration before showing the next in queue.
+ * </p>
  */
 public class SnackProgressBarManager {
 
-    /**
-     * @hide
-     */
-    @Retention(SOURCE)
     @IntDef({LENGTH_LONG, LENGTH_SHORT, LENGTH_INDEFINITE})
-    public @interface Duration {
-    }
+    @Retention(SOURCE)
+    @interface Duration {}
 
     /**
-     * Show the Snackbar indefinitely.
+     * Show the SnackProgressBar indefinitely.
+     * Note that this will be changed to LENGTH_LONG and dismissed
+     * if there is another SnackProgressBar in queue after.
      */
     public static final int LENGTH_INDEFINITE = 0;
     /**
-     * Show the Snackbar for a short period of time.
+     * Show the SnackProgressBar for a short period of time.
      */
     public static final int LENGTH_SHORT = 1000;
     /**
-     * Show the Snackbar for a long period of time.
+     * Show the SnackProgressBar for a long period of time.
      */
     public static final int LENGTH_LONG = 2750;
 
-
     /**
-     * Default snackbar background color as per Material Design
+     * Default snackbar background color as per Material Design.
      */
     public static final int SNACKBAR_COLOR_DEFAULT = R.color.snackBar_background;
     /**
-     * Default message text color as per Material Design
+     * Default message text color as per Material Design.
      */
     public static final int MESSAGE_COLOR_DEFAULT = R.color.textWhitePrimary;
     /**
-     * Default action text color as per Material Design i.e. R.color.colorAccent
+     * Default action text color as per Material Design i.e. R.color.colorAccent.
      */
     public static final int ACTION_COLOR_DEFAULT = R.color.colorAccent;
     /**
-     * Default progressBar color as per Material Design i.e. R.color.colorAccent
+     * Default progressBar color as per Material Design i.e. R.color.colorAccent.
      */
     public static final int PROGRESSBAR_COLOR_DEFAULT = R.color.colorAccent;
 
@@ -90,22 +92,22 @@ public class SnackProgressBarManager {
     private OnActionClickListener onActionClickListener = null;
     // queue related
     private HashMap<Integer, SnackProgressBar> snackProgressBars = new HashMap<>();
-    private ArrayList<Integer> snackProgressBarsToShow = new ArrayList<>();
-    private ArrayList<Long> snackProgressBarDuration = new ArrayList<>();
-    private ArrayList<Boolean> snackProgressBarDone = new ArrayList<>();
+    private ArrayList<SnackProgressBar> queueBars = new ArrayList<>();
+    private ArrayList<Long> queueDurations = new ArrayList<>();
+    private ArrayList<Boolean> queueDone = new ArrayList<>();
     private int type;
-    private int isShowingQueue = 0;
-    private int isShowingId = 0;
+    private int currentQueue = 0;
+    private SnackProgressBar currentBar = null;
     // action related
     private boolean allowUserInput;
     private boolean swipeToDismiss;
-    private boolean showProgressPercentage;
     // animation related
+    private static final float SWIPE_OUT_VELOCITY = 800f;
     private static final long ANIMATION_DURATION = 300;
-    private static final String DEBUG_TAG = "SnackProgressBar";
+    private boolean toShow = false;
 
     /**
-     * Interface for passing user click on action
+     * Interface for passing user click on action button.
      */
     public interface OnActionClickListener {
         void onActionClick();
@@ -114,7 +116,7 @@ public class SnackProgressBarManager {
     /**
      * Constructor
      *
-     * @param activity activity to inflate the layout in
+     * @param activity Activity to inflate the SnackProgressBar RelativeLayout in.
      */
     public SnackProgressBarManager(@NonNull Activity activity) {
         this.context = activity.getApplicationContext();
@@ -126,14 +128,14 @@ public class SnackProgressBarManager {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
         activity.addContentView(contentView, layoutParams);
-        overlayLayout = contentView.findViewById(R.id.snackProgressBar_layout_overlay);
-        mainLayout = contentView.findViewById(R.id.snackProgressBar_layout_main);
-        snackBarLayout = contentView.findViewById(R.id.snackProgressBar_layout_snackBar);
-        messageText = (TextView) contentView.findViewById(R.id.snackProgressBar_txt_message);
-        progressText = (TextView) contentView.findViewById(R.id.snackProgressBar_txt_progress);
-        actionText = (TextView) contentView.findViewById(R.id.snackProgressBar_txt_action);
-        determinateProgressBar = (ProgressBar) contentView.findViewById(R.id.snackProgressBar_progressbar_determinate);
-        indeterminateProgressBar = (ProgressBar) contentView.findViewById(R.id.snackProgressBar_progressbar_indeterminate);
+        overlayLayout = activity.findViewById(R.id.snackProgressBar_layout_overlay);
+        mainLayout = activity.findViewById(R.id.snackProgressBar_layout_main);
+        snackBarLayout = activity.findViewById(R.id.snackProgressBar_layout_snackBar);
+        messageText = (TextView) activity.findViewById(R.id.snackProgressBar_txt_message);
+        progressText = (TextView) activity.findViewById(R.id.snackProgressBar_txt_progress);
+        actionText = (TextView) activity.findViewById(R.id.snackProgressBar_txt_action);
+        determinateProgressBar = (ProgressBar) activity.findViewById(R.id.snackProgressBar_progressbar_determinate);
+        indeterminateProgressBar = (ProgressBar) activity.findViewById(R.id.snackProgressBar_progressbar_indeterminate);
         // hide view
         mainLayout.setTranslationY(heightSingle);
         // set listeners
@@ -142,17 +144,40 @@ public class SnackProgressBarManager {
     }
 
     /**
-     * Add a SnackProgressBar into queue
-     * @param snackProgressBar SnackProgressBar to add into queue
+     * Add a SnackProgressBar into SnackProgressBarManager's HashMap to perform further action.
+     * The SnackProgressBar is uniquely identified with the SnackProgressBar's id.
+     * The first SnackProgressBar will be overwritten if another SnackProgressBar with the same id
+     * is added to the list.
+     *
+     * @param snackProgressBar SnackProgressBar to be added.
+     * @see SnackProgressBar
      */
     public void add(@NonNull SnackProgressBar snackProgressBar) {
         snackProgressBars.put(snackProgressBar.getId(), snackProgressBar);
     }
 
+    /**
+     * Show the SnackProgressBar based on its id with {@link #LENGTH_INDEFINITE}.
+     * If another SnackProgressBar is already showing in the MainLayout,
+     * this SnackProgressBar will be queued and shown accordingly after those queued are dismissed.
+     *
+     * @param id id of the SnackProgressBar to be shown (must be already added to HashMap).
+     * @see #add(SnackProgressBar)
+     */
     public void show(@IntRange(from = 1) int id) {
         show(id, LENGTH_INDEFINITE);
     }
 
+    /**
+     * Show the SnackProgressBar based on its id with the specified duration.
+     * If another SnackProgressBar is already showing in the MainLayout,
+     * this SnackProgressBar will be queued and shown accordingly after those queued are dismissed.
+     *
+     * @param id       id of the SnackProgressBar to be shown (must be already added to HashMap).
+     * @param duration duration to show the SnackProgressBar of either
+     *                 {@link #LENGTH_SHORT}, {@link #LENGTH_LONG}, {@link #LENGTH_INDEFINITE}.
+     * @see #add(SnackProgressBar)
+     */
     public void show(@IntRange(from = 1) final int id, @Duration final long duration) {
         SnackProgressBar snackProgressBar = snackProgressBars.get(id);
         if (snackProgressBar != null) {
@@ -162,46 +187,79 @@ public class SnackProgressBarManager {
         }
     }
 
+    /**
+     * Show the SnackProgressBar based on its id with {@link #LENGTH_INDEFINITE}.
+     * If another SnackProgressBar is already showing in the MainLayout,
+     * this SnackProgressBar will be queue and shown accordingly after those queued are dismissed.
+     *
+     * @param snackProgressBar SnackProgressBar to be shown.
+     */
     public void show(@NonNull SnackProgressBar snackProgressBar) {
         show(snackProgressBar, LENGTH_INDEFINITE);
     }
 
-    public void show(@NonNull final SnackProgressBar snackProgressBar, @Duration final long duration) {
-        if (!snackProgressBars.containsKey(snackProgressBar.getId())) {
-            snackProgressBars.put(snackProgressBar.getId(), snackProgressBar);
-        }
+    /**
+     * Show the SnackProgressBar based on its id with the specified duration.
+     * If another SnackProgressBar is already showing in the MainLayout,
+     * this SnackProgressBar will be queued and shown accordingly after those queued are dismissed.
+     *
+     * @param snackProgressBar SnackProgressBar to be shown.
+     * @param duration         duration to show the SnackProgressBar of either
+     *                         {@link #LENGTH_SHORT}, {@link #LENGTH_LONG}, {@link #LENGTH_INDEFINITE}.
+     */
+    public void show(@NonNull SnackProgressBar snackProgressBar, @Duration long duration) {
         addToQueue(snackProgressBar, duration);
     }
 
-    public void update() {
-        if (isShowingId > 0) {
-            update(isShowingId);
-        }
+    /**
+     * Update the last showing SnackProgressBar.
+     */
+    public void updateLastShowing() {
+        updateTo(currentBar);
     }
 
-    public void update(@IntRange(from = 1) int id) {
+    /**
+     * This will update the MainLayout without dismissing it e.g. updating message without animation.
+     * <p>
+     * Note: This does not change the queue.
+     * </p>
+     *
+     * @param id id of the SnackProgressBar to be updated to (must be already added to HashMap).
+     */
+    public void updateTo(@IntRange(from = 1) int id) {
         SnackProgressBar snackProgressBar = snackProgressBars.get(id);
         if (snackProgressBar != null) {
-            update(snackProgressBar);
+            updateTo(snackProgressBar);
         } else {
             throw new IllegalArgumentException("SnackProgressBar with id = " + id + " is not found!");
         }
     }
 
-    public void update(@NonNull SnackProgressBar snackProgressBar) {
-        add(snackProgressBar);
+    /**
+     * This will update the MainLayout without dismissing it e.g. updating message without animation.
+     * <p>
+     * Note: This does not change the queue.
+     * </p>
+     *
+     * @param snackProgressBar SnackProgressBar to be updated to.
+     */
+    public void updateTo(@NonNull SnackProgressBar snackProgressBar) {
+        setType(snackProgressBar.getType());
+        showProgressPercentage(snackProgressBar.isShowProgressPercentage());
+        setAction(snackProgressBar.getAction());
         setAllowUserInput(snackProgressBar.isAllowUserInput());
         setSwipeToDismiss(snackProgressBar.getType(), snackProgressBar.isSwipeToDismiss());
-        showProgressPercentage(snackProgressBar.isShowProgressPercentage());
-        setType(snackProgressBar.getType());
         setProgressMax(snackProgressBar.getProgressMax());
-        setAction(snackProgressBar.getAction());
         setMessage(snackProgressBar.getMessage());
     }
 
+    /**
+     * Dismiss the currently showing SnackProgressBar.
+     * The next SnackProgressBar in queue will be shown.
+     */
     public void dismiss() {
         overlayLayout.setVisibility(View.GONE);
-        hide();
+        hideMainLayout();
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -211,44 +269,99 @@ public class SnackProgressBarManager {
         }, ANIMATION_DURATION);
     }
 
+    /**
+     * Clear all the SnackProgressBar that is in queue to be shown.
+     * The currently shown SnackProgressBar will also be dismissed.
+     */
+    public void clearAll() {
+        resetQueue();
+        hideMainLayout();
+        overlayLayout.setVisibility(View.GONE);
+    }
+
+    /**
+     * Attach actionClickListener.
+     *
+     * @param onActionClickListener OnActionClickListener.
+     */
     public SnackProgressBarManager setOnActionClickListener(OnActionClickListener onActionClickListener) {
         this.onActionClickListener = onActionClickListener;
         return this;
     }
 
+    /**
+     * Pass the view (usually FloatingActionButton) to move up or down as SnackProgressBar is shown or dismissed.
+     *
+     * @param view View to be animated along with the SnackProgressBar.
+     */
     public SnackProgressBarManager setViewToMove(View view) {
         this.viewToMove = view;
         return this;
     }
 
+    /**
+     * Set the transparency of the OverlayLayout which blocks user input.
+     *
+     * @param alpha Alpha between 0.0 to 1.0. Default = 0.8.
+     */
     public SnackProgressBarManager setOverlayLayoutAlpha(@FloatRange(from = 0, to = 1) float alpha) {
         overlayLayout.setAlpha(alpha);
         return this;
     }
 
-    public SnackProgressBarManager setActionTextColor(int resId) {
-        actionText.setTextColor(ContextCompat.getColor(context, resId));
+    /**
+     * Set the action button text color.
+     *
+     * @param colorId R.color id.
+     * @see #ACTION_COLOR_DEFAULT
+     */
+    public SnackProgressBarManager setActionTextColor(int colorId) {
+        actionText.setTextColor(ContextCompat.getColor(context, colorId));
         return this;
     }
 
-    public SnackProgressBarManager setMessageTextColor(int resId) {
-        messageText.setTextColor(ContextCompat.getColor(context, resId));
+    /**
+     * Set the message text color.
+     *
+     * @param colorId R.color id.
+     * @see #MESSAGE_COLOR_DEFAULT
+     */
+    public SnackProgressBarManager setMessageTextColor(int colorId) {
+        messageText.setTextColor(ContextCompat.getColor(context, colorId));
         return this;
     }
 
-    public SnackProgressBarManager setProgressBarColor(int resId) {
+    /**
+     * Set the progressBar color.
+     *
+     * @param colorId R.color id.
+     * @see #PROGRESSBAR_COLOR_DEFAULT
+     */
+    public SnackProgressBarManager setProgressBarColor(int colorId) {
         determinateProgressBar.getProgressDrawable().setColorFilter(
-                ContextCompat.getColor(context, resId), android.graphics.PorterDuff.Mode.SRC_IN);
+                ContextCompat.getColor(context, colorId), android.graphics.PorterDuff.Mode.SRC_IN);
         indeterminateProgressBar.getIndeterminateDrawable().setColorFilter(
-                ContextCompat.getColor(context, resId), android.graphics.PorterDuff.Mode.SRC_IN);
+                ContextCompat.getColor(context, colorId), android.graphics.PorterDuff.Mode.SRC_IN);
         return this;
     }
 
-    public SnackProgressBarManager setSnackBarColor(int resId) {
-        snackBarLayout.setBackgroundColor(ContextCompat.getColor(context, resId));
+    /**
+     * Set the snackbar background color.
+     *
+     * @param colorId R.color id.
+     * @see #SNACKBAR_COLOR_DEFAULT
+     */
+    public SnackProgressBarManager setSnackBarColor(int colorId) {
+        snackBarLayout.setBackgroundColor(ContextCompat.getColor(context, colorId));
         return this;
     }
 
+    /**
+     * Set the progress for SnackProgressBar of TYPE_DETERMINATE.
+     * It will also update the progress text in %.
+     *
+     * @param progress Progress of the progressBar.
+     */
     public SnackProgressBarManager setProgress(@IntRange(from = 0) int progress) {
         determinateProgressBar.setProgress(progress);
         int progress100 = (int) (progress / (float) determinateProgressBar.getMax() * 100);
@@ -257,80 +370,120 @@ public class SnackProgressBarManager {
         return this;
     }
 
+    /**
+     * Set whether user input is allowed. Setting to TRUE will display the OverlayLayout which blocks user input.
+     *
+     * @param allowUserInput Whether to allow user input.
+     */
     public SnackProgressBarManager setAllowUserInput(boolean allowUserInput) {
         this.allowUserInput = allowUserInput;
         showOverlayLayout();
         return this;
     }
 
+    /**
+     * Retrieve the SnackProgressBar that was previously added.
+     *
+     * @param id id of the SnackProgressBar contained in SnackProgressBarManager.
+     * @return SnackProgressBar
+     */
     public SnackProgressBar getSnackProgressBar(@IntRange(from = 1) int id) {
         return snackProgressBars.get(id);
     }
 
-    public SnackProgressBar getLastShown() {
-        return snackProgressBars.get(isShowingId);
+    /**
+     * Retrieve the SnackProgressBar that is currently showing.
+     *
+     * @return SnackProgressBar that is currently showing. Return null if nothing is showing.
+     */
+    public SnackProgressBar getLastShowing() {
+        return currentBar;
     }
 
+    /**
+     * Check if the MainLayout is visible.
+     */
     public boolean isVisible() {
         return mainLayout.getTranslationY() < mainLayout.getHeight();
     }
 
-    public void clearAll() {
-        resetQueue();
-        hide();
-        overlayLayout.setVisibility(View.GONE);
-    }
-
+    /**
+     * Adds the SnackProgressBar to queue. It is added as a new object.
+     *
+     * @param snackProgressBar SnackProgressBar to be added to queue
+     * @param duration         duration to show the SnackProgressBar of either
+     *                         {@link #LENGTH_SHORT}, {@link #LENGTH_LONG}, {@link #LENGTH_INDEFINITE}.
+     */
     private void addToQueue(SnackProgressBar snackProgressBar, long duration) {
-        int queue = snackProgressBarsToShow.size();
-        snackProgressBarsToShow.add(snackProgressBar.getId());
-        snackProgressBarDuration.add(duration);
-        snackProgressBarDone.add(false);
+        // get the queue number as the last of queue list
+        int queue = queueBars.size();
+        // add queue
+        SnackProgressBar queueBar = new SnackProgressBar(
+                snackProgressBar.getType(),
+                snackProgressBar.getMessage(),
+                snackProgressBar.getId(),
+                snackProgressBar.isAllowUserInput(),
+                snackProgressBar.isSwipeToDismiss(),
+                snackProgressBar.isShowProgressPercentage(),
+                snackProgressBar.getProgressMax(),
+                snackProgressBar.getAction());
+        queueBars.add(queueBar);
+        queueDurations.add(duration);
+        queueDone.add(false);
+        // start play queue if first item
         if (queue == 0) {
             playQueue(queue);
         }
     }
 
+    /**
+     * Play the queue.
+     *
+     * @param queue queue number of SnackProgressBar added to queue.
+     */
     private void playQueue(final int queue) {
-        Log.d(DEBUG_TAG, "playQueue = " + queue);
-        if (queue < snackProgressBarsToShow.size()) {
+        // check if queue number is bounded
+        if (queue < queueBars.size()) {
+            // check if previous queue is done, only check for 2nd queue and above
             boolean isPreviousSnackBarDone = true;
-            if (queue > 0) isPreviousSnackBarDone = snackProgressBarDone.get(queue - 1);
+            if (queue > 0) {
+                isPreviousSnackBarDone = queueDone.get(queue - 1);
+            }
             if (isPreviousSnackBarDone) {
+                // hide the previous item and add the delay if required
                 long animationDelay = 0L;
                 if (queue == 0 && isVisible()) {
-                    Log.d(DEBUG_TAG, "hide");
-                    hide();
+                    hideMainLayout();
                     animationDelay = ANIMATION_DURATION;
                 }
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        Log.d(DEBUG_TAG, "playQueue start");
-                        int id = snackProgressBarsToShow.get(queue);
-                        long duration = snackProgressBarDuration.get(queue);
-                        isShowingQueue = queue;
-                        isShowingId = id;
-                        update(id);
-                        showMainLayout();
-                        showOverlayLayout();
+                        // update MainLayout and show accordingly
+                        SnackProgressBar snackProgressBar = queueBars.get(queue);
+                        long duration = queueDurations.get(queue);
+                        currentBar = snackProgressBar;
+                        currentQueue = queue;
+                        toShow = true;
+                        updateTo(snackProgressBar);
+                        // change indefinite duration to short if there is next item in queue
                         if (duration == LENGTH_INDEFINITE) {
-                            if (queue < snackProgressBarsToShow.size() - 1) {
-                                Log.d(DEBUG_TAG, "update duration short");
+                            if (queue < queueBars.size() - 1) {
                                 duration = LENGTH_SHORT;
                             }
                         }
+                        // hide the item if is not last item
                         if (duration != LENGTH_INDEFINITE) {
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Log.d(DEBUG_TAG, "hide = " + queue);
-                                    if (isShowingQueue == queue) {
-                                        hide();
+                                    // only hide if the queue is showing (possibly dismissed by user)
+                                    if (currentQueue == queue) {
+                                        hideMainLayout();
+                                        // show next queue after hide animation
                                         new Handler().postDelayed(new Runnable() {
                                             @Override
                                             public void run() {
-                                                Log.d(DEBUG_TAG, "done = " + queue);
                                                 nextQueue();
                                             }
                                         }, ANIMATION_DURATION);
@@ -338,48 +491,68 @@ public class SnackProgressBarManager {
                                 }
                             }, duration);
                         } else {
-                            Log.d(DEBUG_TAG, "reset 1 = " + queue);
+                            // else, queue is done
                             resetQueue();
                         }
                     }
                 }, animationDelay);
             }
         } else {
-            Log.d(DEBUG_TAG, "reset 2 = " + queue);
+            // else, queue is done
             resetQueue();
         }
     }
 
+    /**
+     * Play the next in queue.
+     */
     private void nextQueue() {
-        if (isShowingQueue < snackProgressBarsToShow.size()) {
-            snackProgressBarDone.set(isShowingQueue, true);
-            playQueue(isShowingQueue + 1);
+        // if bounded, set current queue as done and move to next
+        if (currentQueue < queueBars.size()) {
+            queueDone.set(currentQueue, true);
+            playQueue(currentQueue + 1);
         }
     }
 
+    /**
+     * Reset queue.
+     */
     private void resetQueue() {
-        isShowingQueue = 0;
-        snackProgressBarsToShow.clear();
-        snackProgressBarDuration.clear();
-        snackProgressBarDone.clear();
+        currentQueue = 0;
+        queueBars.clear();
+        queueDurations.clear();
+        queueDone.clear();
     }
 
-    private void hide() {
+    /**
+     * Show MainLayout.
+     */
+    private void showMainLayout() {
+        mainLayout.requestLayout();
+        mainLayout.animate().translationY(0);
+        // move view to higher location
+        if (viewToMove != null) {
+            viewToMove.animate().translationY(-1 * mainLayout.getHeight());
+        }
+        toShow = false;
+    }
+
+    /**
+     * Hide MainLayout.
+     */
+    private void hideMainLayout() {
         if (isVisible()) {
             mainLayout.animate().translationY(mainLayout.getHeight());
         }
+        // move view to original location
         if (viewToMove != null && viewToMove.getTranslationY() != 0) {
             viewToMove.animate().translationY(0);
         }
     }
 
-    private void showMainLayout() {
-        mainLayout.animate().translationY(0);
-        if (viewToMove != null) {
-            viewToMove.animate().translationY(-1 * mainLayout.getHeight());
-        }
-    }
-
+    /**
+     * Show overlayLayout.
+     */
     private void showOverlayLayout() {
         if (allowUserInput) {
             overlayLayout.setVisibility(View.GONE);
@@ -388,17 +561,57 @@ public class SnackProgressBarManager {
         }
     }
 
+
+    /**
+     * Animation for swipe out.
+     *
+     * @param toRight Direction of the animation.
+     */
+    private void swipeOut(boolean toRight) {
+        float direction = toRight ? 1 : -1;
+        overlayLayout.setVisibility(View.GONE);
+        mainLayout.animate().translationX(direction * mainLayout.getWidth());
+        mainLayout.animate().alpha(0);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // similar to dismiss(), play next in queue
+                if (viewToMove != null) {
+                    viewToMove.animate().translationY(0);
+                }
+                resetMainLayout();
+                nextQueue();
+            }
+        }, ANIMATION_DURATION);
+    }
+
+    /**
+     * Animation for swipe in.
+     */
+    private void swipeIn() {
+        mainLayout.animate().translationX(0);
+        mainLayout.animate().alpha(1);
+    }
+
+    /**
+     * Reset mainLayout to hide position below screen.
+     */
+    private void resetMainLayout() {
+        mainLayout.setTranslationX(0);
+        mainLayout.setTranslationY(mainLayout.getHeight());
+        mainLayout.setAlpha(1f);
+        setProgress(0);
+    }
+
+    /**
+     * Set the MainLayout view.
+     *
+     * @param type Type of SnackProgressBar.
+     */
     private void setType(int type) {
         // update type
         this.type = type;
-        // check view if isVisible
-        boolean isVisible = isVisible();
-        // animate hide first
-        if (isVisible) {
-            mainLayout.setVisibility(View.GONE);
-        }
         // update view
-        showProgressPercentage(showProgressPercentage);
         switch (type) {
             case SnackProgressBar.TYPE_ACTION:
                 actionText.setVisibility(View.VISIBLE);
@@ -421,19 +634,47 @@ public class SnackProgressBarManager {
                 indeterminateProgressBar.setVisibility(View.GONE);
                 break;
         }
-        // show again if isVisible
-        if (isVisible) {
-            mainLayout.setVisibility(View.VISIBLE);
-        }
     }
 
+    /**
+     * Set messageText.
+     *
+     * @param message Message of SnackProgressBar.
+     */
     private void setMessage(final String message) {
+        final int oldLineCount = messageText.getLineCount();
         messageText.setText(message);
-        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) snackBarLayout.getLayoutParams();
-        layoutParams.height = messageText.getLineCount() < 2 ? heightSingle : heightMulti;
-        snackBarLayout.setLayoutParams(layoutParams);
+        // set post to measure line count correctly
+        messageText.post(new Runnable() {
+            @Override
+            public void run() {
+                final int newLineCount = messageText.getLineCount();
+                LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) messageText.getLayoutParams();
+                layoutParams.height = newLineCount < 2 ? heightSingle : heightMulti;
+                messageText.setLayoutParams(layoutParams);
+                // set post delay so that layout is drawn correctly before showing
+                mainLayout.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (toShow) {
+                            showMainLayout();
+                            showOverlayLayout();
+                        } else if (isVisible() && oldLineCount != newLineCount) {
+                            showMainLayout();
+                        }
+                    }
+                }, 15);
+            }
+        });
     }
 
+    /**
+     * Set whether user can swipe to dismiss.
+     * This only works for TYPE_ACTION and TYPE_MESSAGE.
+     *
+     * @param type           Type of SnackProgressBar.
+     * @param swipeToDismiss Whether user can swipe to dismiss.
+     */
     private void setSwipeToDismiss(int type, boolean swipeToDismiss) {
         switch (type) {
             case SnackProgressBar.TYPE_ACTION:
@@ -447,8 +688,12 @@ public class SnackProgressBarManager {
         }
     }
 
-    private void showProgressPercentage(boolean show) {
-        this.showProgressPercentage = show;
+    /**
+     * Set whether to show progressText. Only will be shown for TYPE_DETERMINATE.
+     *
+     * @param showProgressPercentage Whether to show progressText.
+     */
+    private void showProgressPercentage(boolean showProgressPercentage) {
         if (showProgressPercentage && type == SnackProgressBar.TYPE_DETERMINATE) {
             progressText.setVisibility(View.VISIBLE);
         } else {
@@ -456,18 +701,32 @@ public class SnackProgressBarManager {
         }
     }
 
+    /**
+     * Set the max progress for progressBar. Only will be shown for TYPE_DETERMINATE.
+     *
+     * @param progressMax Max progress for progressBar.
+     */
     private void setProgressMax(int progressMax) {
         determinateProgressBar.setMax(progressMax);
     }
 
+    /**
+     * Set actionText in upper case. Only will be shown for TYPE_ACTION.
+     *
+     * @param action Action to be displayed.
+     */
     private void setAction(final String action) {
-        actionText.setText(action);
+        actionText.setText(action.toUpperCase());
     }
 
+    /**
+     * Set onActionClickListener
+     */
     private void setActionTextClickListener() {
         actionText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // pass click via interface
                 if (onActionClickListener != null) {
                     onActionClickListener.onActionClick();
                 }
@@ -475,6 +734,9 @@ public class SnackProgressBarManager {
         });
     }
 
+    /**
+     * Set touch listener of messageText.
+     */
     private void setOnTouchListener() {
         messageText.setOnTouchListener(new View.OnTouchListener() {
 
@@ -483,6 +745,7 @@ public class SnackProgressBarManager {
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
+                // only track if allow swipe to dismiss
                 if (swipeToDismiss) {
                     int index = event.getActionIndex();
                     int pointerId = event.getPointerId(index);
@@ -518,14 +781,14 @@ public class SnackProgressBarManager {
                                 toSwipeOut = true;
                             }
                             // swipe out if velocity is high
-                            if (Math.abs(velocity) > 1000) {
+                            if (Math.abs(velocity) > SWIPE_OUT_VELOCITY) {
                                 toSwipeOut = true;
                             }
                             // determine swipe out direction
                             if (toSwipeOut) {
-                                if (endX - startX > 100) {
+                                if (endX - startX > 0) {
                                     swipeOut(true);
-                                } else if (endX - startX < -100) {
+                                } else {
                                     swipeOut(false);
                                 }
                             } else {
@@ -538,35 +801,5 @@ public class SnackProgressBarManager {
                 return true;
             }
         });
-    }
-
-    private void swipeOut(boolean toRight) {
-        float direction = toRight ? 1 : -1;
-        overlayLayout.setVisibility(View.GONE);
-        mainLayout.animate().translationX(direction * mainLayout.getWidth());
-        mainLayout.animate().alpha(0);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                // return to hide position
-                if (viewToMove != null) {
-                    viewToMove.animate().translationY(0);
-                }
-                resetMainLayout();
-                nextQueue();
-            }
-        }, ANIMATION_DURATION);
-    }
-
-    private void resetMainLayout() {
-        mainLayout.setTranslationX(0);
-        mainLayout.setTranslationY(mainLayout.getHeight());
-        mainLayout.setAlpha(1f);
-        setProgress(0);
-    }
-
-    private void swipeIn() {
-        mainLayout.animate().translationX(0);
-        mainLayout.animate().alpha(1);
     }
 }
