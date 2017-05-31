@@ -51,8 +51,10 @@ snackProgressBarManager.show(id);
 ```
 
 Calling `show()` will put the SnackProgressBar into a queue, which will be shown after those in queue before it has been dismissed
-(by user action or set duration). Note: If LENGTH_INDEFINITE is specified for the queued SnackProgressBar, adding a new SnackProgressBar
-into the queue will cause the previous SnackProgressBar to use LENGTH_SHORT instead, dismissed and then show the new SnackProgressBar.
+(by user action or set duration).
+
+Note: If LENGTH_INDEFINITE is specified for the queued SnackProgressBar, adding a new SnackProgressBar into the queue will cause 
+the previous SnackProgressBar to use LENGTH_SHORT instead, dismissed and then show the new SnackProgressBar.
 
 Calling `show()` will always animate the hiding and showing of SnackProgressBar between queue. Use `update()` instead to modify the
 displayed SnackProgressBar without animation. To modify the currently showing SnackProgressBar:
@@ -67,6 +69,11 @@ snackProgressBarManager.update(snackProgressBar);
 
 Call `dismiss()` to dismiss the currently showing SnackProgressBar. The next SnackProgressBar in queue will be shown.
 Call `clearAll()` to dismiss the currently showing SnackProgressBar and clear all other SnackProgressBars in queue.
+
+For `TYPE_DETERMINATE`, call `setProgress()` to set the progress of ProgressBar.
+
+## JavaDoc
+For further information, see https://tingyik90.github.io/snackprogressbar/javadoc/
 
 ## Download
 In the project Gradle:
