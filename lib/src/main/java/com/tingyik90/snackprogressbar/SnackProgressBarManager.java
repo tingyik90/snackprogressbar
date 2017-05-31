@@ -152,8 +152,8 @@ public class SnackProgressBarManager {
      * @param snackProgressBar SnackProgressBar to be added.
      * @see SnackProgressBar
      */
-    public void add(@NonNull SnackProgressBar snackProgressBar) {
-        snackProgressBars.put(snackProgressBar.getId(), snackProgressBar);
+    public void add(@NonNull SnackProgressBar snackProgressBar, @IntRange(from = 1) int id) {
+        snackProgressBars.put(id, snackProgressBar);
     }
 
     /**
@@ -162,7 +162,7 @@ public class SnackProgressBarManager {
      * this SnackProgressBar will be queued and shown accordingly after those queued are dismissed.
      *
      * @param id id of the SnackProgressBar to be shown (must be already added to HashMap).
-     * @see #add(SnackProgressBar)
+     * @see #add(SnackProgressBar, int)
      */
     public void show(@IntRange(from = 1) int id) {
         show(id, LENGTH_INDEFINITE);
@@ -176,7 +176,7 @@ public class SnackProgressBarManager {
      * @param id       id of the SnackProgressBar to be shown (must be already added to HashMap).
      * @param duration duration to show the SnackProgressBar of either
      *                 {@link #LENGTH_SHORT}, {@link #LENGTH_LONG}, {@link #LENGTH_INDEFINITE}.
-     * @see #add(SnackProgressBar)
+     * @see #add(SnackProgressBar, int)
      */
     public void show(@IntRange(from = 1) final int id, @Duration final long duration) {
         SnackProgressBar snackProgressBar = snackProgressBars.get(id);
@@ -421,7 +421,6 @@ public class SnackProgressBarManager {
         SnackProgressBar queueBar = new SnackProgressBar(
                 snackProgressBar.getType(),
                 snackProgressBar.getMessage(),
-                snackProgressBar.getId(),
                 snackProgressBar.isAllowUserInput(),
                 snackProgressBar.isSwipeToDismiss(),
                 snackProgressBar.isShowProgressPercentage(),

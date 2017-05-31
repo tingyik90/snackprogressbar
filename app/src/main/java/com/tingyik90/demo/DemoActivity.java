@@ -20,7 +20,7 @@ public class DemoActivity extends AppCompatActivity implements SnackProgressBarM
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_demo);
         View floatingActionButton = findViewById(R.id.fab);
-        // always only have one instance of SnackProgressBarManager in the activity
+        // always have one instance of SnackProgressBarManager only in the activity
         snackProgressBarManager = new SnackProgressBarManager(this)
                 .setViewToMove(floatingActionButton)    // (optional) set the view which will animate with SnackProgressBar
                 .setOnActionClickListener(this)         // (optional) set the action click listener
@@ -28,27 +28,27 @@ public class DemoActivity extends AppCompatActivity implements SnackProgressBarM
 
         // create SnackProgressBar
         SnackProgressBar actionType = new SnackProgressBar(
-                SnackProgressBar.TYPE_ACTION, "Action type. Click or swipe to dismiss.", 100)
+                SnackProgressBar.TYPE_ACTION, "TYPE_ACTION - Swipe to dismiss.")
                 .setAction("DISMISS")       // (required) set action button
                 .setSwipeToDismiss(true);   // (optional) allow user swipe to dismiss, default = FALSE
 
         determinateType = new SnackProgressBar(
-                SnackProgressBar.TYPE_DETERMINATE, "Loading for 5 seconds...", 200)
-                .setProgressMax(100)               // (optional) set max progress, default = 100
+                SnackProgressBar.TYPE_DETERMINATE, "TYPE_DETERMINATE.")
+                .setProgressMax(100)                // (optional) set max progress, default = 100
                 .setShowProgressPercentage(true);   // (optional) show percentage, default = TRUE
 
         indeterminateType = new SnackProgressBar(
-                SnackProgressBar.TYPE_INDETERMINATE, "Loading for 2 seconds", 300);
+                SnackProgressBar.TYPE_INDETERMINATE, "TYPE_INDETERMINATE.");
 
         SnackProgressBar messageType = new SnackProgressBar(
-                SnackProgressBar.TYPE_MESSAGE, "This is a message type SnackProgressBar.", 400)
+                SnackProgressBar.TYPE_MESSAGE, "TYPE_MESSAGE.")
                 .setAllowUserInput(true)    // (optional) allow user input, default = FALSE
                 .setSwipeToDismiss(true);   // (optional) allow user swipe to dismiss, default = FALSE
 
         // add to SnackProgressBarManager
-        snackProgressBarManager.add(actionType);
-        snackProgressBarManager.add(determinateType);
-        snackProgressBarManager.add(messageType);
+        snackProgressBarManager.add(actionType, 100);
+        snackProgressBarManager.add(determinateType, 200);
+        snackProgressBarManager.add(messageType, 300);
     }
 
     public void actionBtnClick(View view) {
@@ -87,7 +87,7 @@ public class DemoActivity extends AppCompatActivity implements SnackProgressBarM
             public void onTick(long millisUntilFinished) {
                 i++;
                 // get the currently showing indeterminateType and change the message
-                snackProgressBarManager.getLastShowing().setMessage("Now loading another 2 seconds... (" + i + ")");
+                snackProgressBarManager.getLastShowing().setMessage("TYPE_INDETERMINATE - " + i);
                 // calling updateTo() will not hide the SnackProgressBar and show it again as animation
                 snackProgressBarManager.updateLastShowing();
             }
@@ -95,7 +95,7 @@ public class DemoActivity extends AppCompatActivity implements SnackProgressBarM
             @Override
             public void onFinish() {
                 // change it to messageType which was added before
-                snackProgressBarManager.show(400);
+                snackProgressBarManager.show(300);
                 /* If you've clicked on "Message" button, then the message shown will be as shown below.
                 * Else, it will be the original "This is a message type SnackProgressBar."*/
             }
@@ -105,10 +105,10 @@ public class DemoActivity extends AppCompatActivity implements SnackProgressBarM
     public void messageBtnClick(View view) {
         // grab the stored SnackProgressBar and set the message.
         // note that this is changing the stored SnackProgressBar itself
-        snackProgressBarManager.getSnackProgressBar(400).setMessage("This is a message number " + queue + ". " +
+        snackProgressBarManager.getSnackProgressBar(300).setMessage("TYPE_MESSAGE - " + queue + ". " +
                 "If the message is too long, the height of snackbar will increase.");
         // change will not be reflected until show() / updateTo() is called, dismiss after duration LENGTH_LONG
-        snackProgressBarManager.show(400, SnackProgressBarManager.LENGTH_LONG);
+        snackProgressBarManager.show(300, SnackProgressBarManager.LENGTH_LONG);
         queue++;
         /* click multiple times to look at the effect of queue. */
     }

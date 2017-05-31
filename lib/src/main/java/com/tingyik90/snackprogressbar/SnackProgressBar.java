@@ -39,7 +39,6 @@ public class SnackProgressBar {
     private boolean allowUserInput = false;
     private boolean swipeToDismiss = false;
     private boolean showProgressPercentage = true;
-    private int id;
     private int type;
     private int progressMax = 100;
     private String action = "";
@@ -51,21 +50,18 @@ public class SnackProgressBar {
      * @param type    SnackProgressBar of either
      *                {@link #TYPE_ACTION}, {@link #TYPE_DETERMINATE}, {@link #TYPE_INDETERMINATE} or {@link #TYPE_MESSAGE}
      * @param message Message of SnackProgressBar.
-     * @param id      Unique id for the SnackProgressBar. See {@link SnackProgressBarManager#add(SnackProgressBar)}.
      */
-    public SnackProgressBar(@Type int type, @NonNull String message, @IntRange(from = 1) int id) {
+    public SnackProgressBar(@Type int type, @NonNull String message) {
         this.type = type;
         this.message = message;
-        this.id = id;
     }
 
     /* Internal constructor for duplicating SnackProgressBar */
-    SnackProgressBar(int type, @NonNull String message, int id,
+    SnackProgressBar(int type, @NonNull String message,
                      boolean allowUserInput, boolean swipeToDismiss, boolean showProgressPercentage,
                      int progressMax, String action) {
         this.type = type;
         this.message = message;
-        this.id = id;
         this.allowUserInput = allowUserInput;
         this.swipeToDismiss = swipeToDismiss;
         this.showProgressPercentage = showProgressPercentage;
@@ -114,10 +110,6 @@ public class SnackProgressBar {
 
     public boolean isShowProgressPercentage() {
         return showProgressPercentage;
-    }
-
-    public int getId() {
-        return id;
     }
 
     public int getType() {
@@ -172,7 +164,6 @@ public class SnackProgressBar {
                 "allowUserInput=" + allowUserInput +
                 ", swipeToDismiss=" + swipeToDismiss +
                 ", showProgressPercentage=" + showProgressPercentage +
-                ", id=" + id +
                 ", type=" + type +
                 ", progressMax=" + progressMax +
                 ", action='" + action + '\'' +
