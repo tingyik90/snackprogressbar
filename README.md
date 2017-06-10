@@ -17,6 +17,7 @@ Enhanced Snackbar for Android.
 ## Getting Started
 ### SnackProgressBarManager
 Start by creating an instance of SnackProgressBarManager in your activity.
+If possible, the root view of the activity should be provided and can be any type of layout.
 
 ```java
 private SnackProgressBarManager snackProgressBarManager;
