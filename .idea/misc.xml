@@ -13,7 +13,7 @@
     <option name="OPTION_DOCUMENT_TAG_USE" value="false" />
     <option name="OPTION_DOCUMENT_TAG_AUTHOR" value="false" />
     <option name="OPTION_DOCUMENT_TAG_VERSION" value="false" />
-    <option name="OPTION_DOCUMENT_TAG_DEPRECATED" value="true" />
+    <option name="OPTION_DOCUMENT_TAG_DEPRECATED" value="false" />
     <option name="OPTION_DEPRECATED_LIST" value="true" />
     <option name="OTHER_OPTIONS" />
     <option name="HEAP_SIZE" />
