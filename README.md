@@ -18,13 +18,11 @@ protected void onCreate(Bundle savedInstanceState) {
             .setOnDisplayListener(new SnackProgressBarManager.OnDisplayListener() {
                 @Override
                 public void onShown(int onDisplayId) {
-                    Toast.makeText(getApplicationContext(),
-                            "SnackProgressBar(" + onDisplayId + ") shown!", Toast.LENGTH_SHORT).show();
+                    // Do something...
                 }
                 @Override
                 public void onDismissed(int onDisplayId) {
-                    Toast.makeText(getApplicationContext(),
-                            "SnackProgressBar(" + onDisplayId + ") dismissed!", Toast.LENGTH_SHORT).show();
+                    // Do something...
                 }
             });
 }
@@ -41,7 +39,7 @@ SnackProgressBar actionType = new SnackProgressBar(
         .setAction("DISMISS", new SnackProgressBar.OnActionClickListener() {
         @Override
         public void onActionClick() {
-                Toast.makeText(getApplicationContext(), "Action Clicked!", Toast.LENGTH_SHORT).show();
+                // Do something...
             }
         })
         // (optional) allow user swipe to dismiss, default = FALSE
