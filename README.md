@@ -128,7 +128,7 @@ For `TYPE_DETERMINATE`, call `setProgress()` to set the progress of ProgressBar.
 ## JavaDoc
 For further information, see https://tingyik90.github.io/snackprogressbar/javadoc/.
 
-Also, see the demo https://github.com/tingyik90/snackprogressbar/tree/master/app/src/main/java/com/tingyik90/demo.
+Watch the demo video at https://youtu.be/g5lLQtrthUc.
 
 ## Download
 In the project Gradle:
