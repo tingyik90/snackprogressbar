@@ -26,7 +26,7 @@ private SnackProgressBarManager snackProgressBarManager;
 protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     // always have one instance of SnackProgressBarManager only in the activity
-    snackProgressBarManager = new SnackProgressBarManager(view)
+    snackProgressBarManager = new SnackProgressBarManager(rootView)
             // (optional) set the view which will animate with SnackProgressBar e.g. FAB when CoordinatorLayout is not used.
             // use setViewsToMove instead if multiple views need to be animated
             .setViewToMove(floatingActionButton)
