@@ -113,7 +113,14 @@ class SnackProgressBarCore extends BaseTransientBottomBar<SnackProgressBarCore> 
             setOnBarTouchListener();
             // disable SnackManager by stopping countdown
             setDuration(LENGTH_INDEFINITE);
-            // assign the actual duration
+            // prepare dismiss runnable
+            runnable = new Runnable() {
+                @Override
+                public void run() {
+                    dismiss();
+                }
+            };
+            // assign the actual duration if dismiss is required
             if (duration != LENGTH_INDEFINITE) {
                 switch (duration) {
                     case LENGTH_SHORT:
@@ -123,12 +130,6 @@ class SnackProgressBarCore extends BaseTransientBottomBar<SnackProgressBarCore> 
                         duration = LONG_DURATION_MS;
                         break;
                 }
-                runnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        dismiss();
-                    }
-                };
                 handler.postDelayed(runnable, duration);
             }
         }
@@ -280,7 +281,9 @@ class SnackProgressBarCore extends BaseTransientBottomBar<SnackProgressBarCore> 
                         break;
                     case SnackProgressBarLayout.SWIPE_IN:
                         // once the SnackProgressBar is swiped in, resume dismiss countdown
-                        handler.postDelayed(runnable, duration);
+                        if (duration != LENGTH_INDEFINITE) {
+                            handler.postDelayed(runnable, duration);
+                        }
                         break;
                 }
             }

@@ -108,7 +108,6 @@ public class SnackProgressBarManager {
     private SnackProgressBarCore currentCore = null;
     // views related
     private ViewGroup parentView;
-    private View overlayLayout;
     private View[] viewsToMove;
     private int backgroundColor = BACKGROUND_COLOR_DEFAULT;
     private int messageTextColor = MESSAGE_COLOR_DEFAULT;
@@ -331,10 +330,6 @@ public class SnackProgressBarManager {
      */
     public SnackProgressBarManager setOverlayLayoutAlpha(@FloatRange(from = 0f, to = 1f) float overlayLayoutAlpha) {
         this.overlayLayoutAlpha = overlayLayoutAlpha;
-        // update the UI now if applicable
-        if (overlayLayout != null) {
-            overlayLayout.setAlpha(overlayLayoutAlpha);
-        }
         return this;
     }
 
@@ -418,8 +413,9 @@ public class SnackProgressBarManager {
      * @param duration         Duration to show the SnackProgressBar of either
      *                         {@link #LENGTH_SHORT}, {@link #LENGTH_LONG}, {@link #LENGTH_INDEFINITE}
      *                         or any positive millis.
+     * @param onDisplayId      OnDisplayId attached to the SnackProgressBar when implementing the OnDisplayListener.
      */
-    private void addToQueue(SnackProgressBar snackProgressBar, int duration, int callbackId) {
+    private void addToQueue(SnackProgressBar snackProgressBar, int duration, int onDisplayId) {
         // get the queue number as the last of queue list
         int queue = queueBars.size();
         // create a new object
@@ -436,7 +432,7 @@ public class SnackProgressBarManager {
                 snackProgressBar.getOnActionClickListener());
         // put in queue
         queueBars.add(queueBar);
-        queueOnDisplayIds.add(callbackId);
+        queueOnDisplayIds.add(onDisplayId);
         queueDurations.add(duration);
         // play queue if first item
         if (queue == 0) {
@@ -454,7 +450,7 @@ public class SnackProgressBarManager {
         if (queue < queueBars.size()) {
             // get the variables
             currentQueue = queue;
-            currentBar = queueBars.get(queue);
+            final SnackProgressBar snackProgressBar = queueBars.get(queue);
             final int onDisplayId = queueOnDisplayIds.get(queue);
             int duration = queueDurations.get(queue);
             // change duration to LENGTH_SHORT if is not last item
@@ -463,20 +459,24 @@ public class SnackProgressBarManager {
                     duration = LENGTH_SHORT;
                 }
             }
+            final LayoutInflater inflater = LayoutInflater.from(parentView.getContext());
+            final View overlayLayout = inflater.inflate(R.layout.overlay, parentView, false);
+            overlayLayout.setAlpha(overlayLayoutAlpha);
             // add overlayLayout if does not allow user input
-            if (!currentBar.isAllowUserInput()) {
-                LayoutInflater inflater = LayoutInflater.from(parentView.getContext());
-                overlayLayout = inflater.inflate(R.layout.overlay, parentView, false);
-                overlayLayout.setAlpha(overlayLayoutAlpha);
+            if (!snackProgressBar.isAllowUserInput()) {
                 parentView.addView(overlayLayout);
             }
             // create SnackProgressBarCore
-            currentCore = SnackProgressBarCore.make(parentView, currentBar, duration, viewsToMove);
-            currentCore.setColor(backgroundColor, messageTextColor, actionTextColor, progressBarColor);
+            final SnackProgressBarCore snackProgressBarCore = SnackProgressBarCore.make(
+                    parentView, snackProgressBar, duration, viewsToMove);
+            snackProgressBarCore.setColor(backgroundColor, messageTextColor, actionTextColor, progressBarColor);
             final int finalDuration = duration;
-            currentCore.addCallback(new BaseTransientBottomBar.BaseCallback<SnackProgressBarCore>() {
+            snackProgressBarCore.addCallback(new BaseTransientBottomBar.BaseCallback<SnackProgressBarCore>() {
                 @Override
-                public void onShown(SnackProgressBarCore transientBottomBar) {
+                public void onShown(SnackProgressBarCore snackProgressBarCore) {
+                    // set current
+                    currentBar = snackProgressBar;
+                    currentCore = snackProgressBarCore;
                     // callback onDisplayListener
                     if (onDisplayListener != null && onDisplayId != ON_DISPLAY_ID_DEFAULT) {
                         onDisplayListener.onShown(onDisplayId);
@@ -484,13 +484,12 @@ public class SnackProgressBarManager {
                 }
 
                 @Override
-                public void onDismissed(SnackProgressBarCore transientBottomBar, int event) {
-                    // reset currentCore
+                public void onDismissed(SnackProgressBarCore snackProgressBarCore, int event) {
+                    // reset current
                     currentCore = null;
                     // remove overlayLayout
-                    if (overlayLayout != null) {
+                    if (!snackProgressBar.isAllowUserInput()) {
                         parentView.removeView(overlayLayout);
-                        overlayLayout = null;
                     }
                     // callback onDisplayListener
                     if (onDisplayListener != null && onDisplayId != ON_DISPLAY_ID_DEFAULT) {
@@ -506,7 +505,7 @@ public class SnackProgressBarManager {
             if (duration == LENGTH_INDEFINITE) {
                 resetQueue();
             }
-            currentCore.show();
+            snackProgressBarCore.show();
         } else {
             // else, queue is done
             resetQueue();

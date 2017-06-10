@@ -10,7 +10,6 @@ import android.support.v4.view.VelocityTrackerCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -203,7 +202,6 @@ class SnackProgressBarLayout extends LinearLayout implements BaseTransientBottom
         parentView.setPadding(0, 0, 0, 0);
         // check if it is CoordinatorLayout and configure swipe to dismiss
         isCoordinatorLayout = parentView.getParent() instanceof CoordinatorLayout;
-        Log.d("SnackProgressBar", "isCoordinatorLayout = " + isCoordinatorLayout);
         configureSwipeToDismiss();
     }
 
