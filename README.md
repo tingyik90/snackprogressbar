@@ -1,5 +1,22 @@
 # SnackProgressBar
-Enhanced Snackbar with ProgressBar for Android. Start by creating an instance of SnackProgressBarManager in your activity.
+Enhanced Snackbar for Android.
+
+## Features
+1. Four types of SnackProgressBar are available (see image below).
+2. Supports up to 2 lines of message as per Material Design.
+3. Supports long action text by moving it to next line as per Material Design.
+4. Supports swipe to dimiss behaviour even without providing CoordinatorLayout.
+5. Additional views can be added to animate with the SnackProgressBar.
+6. Provides OverlayLayout to prevent user input.
+7. Provides a queue system.
+8. Icon can be added.
+
+![Image of SnackProgressBar](http://i.imgur.com/EZtGKbal.png)
+![Demo of SnackProgressBar](http://i.imgur.com/gIN2W2ml.gif)
+
+## Getting Started
+### SnackProgressBarManager
+Start by creating an instance of SnackProgressBarManager in your activity.
 
 ```java
 private SnackProgressBarManager snackProgressBarManager;
@@ -28,9 +45,7 @@ protected void onCreate(Bundle savedInstanceState) {
 }
 ```
 
-Four types of SnackProgressBar are available.
-![Image of SnackProgressBar](http://i.imgur.com/xGOnwVp.png)
-
+### SnackProgressBar
 Create a SnackProgressBar by calling the following examples.
 ```java
 SnackProgressBar actionType = new SnackProgressBar(
@@ -65,6 +80,7 @@ SnackProgressBar messageType = new SnackProgressBar(
         .setIconResource(R.mipmap.ic_launcher);
 ```
 
+### Show
 Show the SnackProgressBar by calling:
 ```java
 // LENGTH_SHORT, LENGTH_LONG, LENGTH_INDEFINITE or other positive millis can be used
@@ -91,6 +107,7 @@ Calling `show()` will put the SnackProgressBar into a queue, which will be shown
 Note: If LENGTH_INDEFINITE is specified for the queued SnackProgressBar, adding a new SnackProgressBar into the queue will cause 
 the previous SnackProgressBar to use LENGTH_SHORT instead, dismissed and then show the new SnackProgressBar.
 
+### Update
 Calling `show()` will always animate the hiding and showing of SnackProgressBar between queue. Use `updateTo()` instead to modify the
 displayed SnackProgressBar without animation. To modify the currently showing SnackProgressBar:
 ```java
@@ -101,13 +118,17 @@ snackProgressBar.setMessage("TYPE_INDETERMINATE - " + i);
 snackProgressBarManager.updateTo(snackProgressBar);
 ```
 
+### Dismiss
 Call `dismiss()` to dismiss the currently showing SnackProgressBar. The next SnackProgressBar in queue will be shown.
 Call `clearAll()` to dismiss the currently showing SnackProgressBar and clear all other SnackProgressBars in queue.
 
+### Set Progress
 For `TYPE_DETERMINATE`, call `setProgress()` to set the progress of ProgressBar.
 
 ## JavaDoc
-For further information, see https://tingyik90.github.io/snackprogressbar/javadoc/
+For further information, see https://tingyik90.github.io/snackprogressbar/javadoc/.
+
+Also, see the demo https://github.com/tingyik90/snackprogressbar/tree/master/app/src/main/java/com/tingyik90/demo.
 
 ## Download
 In the project Gradle:
