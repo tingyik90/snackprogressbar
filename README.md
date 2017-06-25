@@ -145,7 +145,7 @@ allprojects {
 In the app Gradle:
 ```Gradle
 dependencies {
-    compile 'com.github.tingyik90:snackprogressbar:2.0'
+    compile 'com.github.tingyik90:snackprogressbar:2.1'
 }
 ```
 
