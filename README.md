@@ -12,9 +12,10 @@ Enhanced Snackbar for Android.
 8. Icon can be added.
 
 ![Image of SnackProgressBar](http://i.imgur.com/EZtGKbal.png)
-![Demo of SnackProgressBar](http://i.imgur.com/gIN2W2ml.gif)
+![Demo of SnackProgressBar](http://i.imgur.com/gIN2W2m.gif)
 
 ## Getting Started
+
 ### SnackProgressBarManager
 Start by creating an instance of SnackProgressBarManager in your activity.
 If possible, the root view of the activity should be provided and can be any type of layout.
