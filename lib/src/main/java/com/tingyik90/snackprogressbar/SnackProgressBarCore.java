@@ -6,6 +6,7 @@ import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BaseTransientBottomBar;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,8 +24,11 @@ class SnackProgressBarCore extends BaseTransientBottomBar<SnackProgressBarCore> 
     private static final int LONG_DURATION_MS = 2750;
     private int duration;
     private boolean useDefaultHandler = true;
+    private SnackProgressBar snackProgressBar;
     private Handler handler = new Handler();
     private Runnable runnable;
+    private ViewGroup parentView;
+    private View overlayLayout;
     private SnackProgressBarLayout snackProgressBarLayout;
 
     /**
@@ -44,14 +48,21 @@ class SnackProgressBarCore extends BaseTransientBottomBar<SnackProgressBarCore> 
      */
     static SnackProgressBarCore make(@NonNull ViewGroup parentView, SnackProgressBar snackProgressBar,
                                      int duration, View[] viewsToMove) {
-        // inflate the layout and pass viewsToMove
-        LayoutInflater inflater = LayoutInflater.from(parentView.getContext());
-        SnackProgressBarLayout snackProgressBarLayout = (SnackProgressBarLayout) inflater.inflate(
+        // get inflater from parent
+        final LayoutInflater inflater = LayoutInflater.from(parentView.getContext());
+        // add overlayLayout as background
+        final View overlayLayout = inflater.inflate(R.layout.overlay, parentView, false);
+        parentView.addView(overlayLayout);
+        // inflate SnackProgressBarLayout and pass viewsToMove
+        final SnackProgressBarLayout snackProgressBarLayout = (SnackProgressBarLayout) inflater.inflate(
                 R.layout.snackprogressbar, parentView, false);
         snackProgressBarLayout.setViewsToMove(viewsToMove);
         // create SnackProgressBarCore
         SnackProgressBarCore snackProgressBarCore = new SnackProgressBarCore(
                 parentView, snackProgressBarLayout, snackProgressBarLayout);
+        snackProgressBarCore.snackProgressBar = snackProgressBar;
+        snackProgressBarCore.parentView = parentView;
+        snackProgressBarCore.overlayLayout = overlayLayout;
         snackProgressBarCore.snackProgressBarLayout = snackProgressBarLayout;
         snackProgressBarCore.useDefaultHandler = parentView instanceof CoordinatorLayout;
         snackProgressBarCore.duration = duration;
@@ -65,14 +76,30 @@ class SnackProgressBarCore extends BaseTransientBottomBar<SnackProgressBarCore> 
      * @param snackProgressBar SnackProgressBar to be updated to.
      */
     void updateTo(@NonNull SnackProgressBar snackProgressBar) {
-        int type = snackProgressBar.getType();
-        setType(type);
-        setIcon(snackProgressBar.getIconBitmap(), snackProgressBar.getIconResource());
-        setAction(type, snackProgressBar.getAction(), snackProgressBar.getOnActionClickListener());
-        showProgressPercentage(type, snackProgressBar.isShowProgressPercentage());
-        setProgressMax(snackProgressBar.getProgressMax());
-        setSwipeToDismiss(snackProgressBar.isSwipeToDismiss());
-        setMessage(snackProgressBar.getMessage());
+        this.snackProgressBar = snackProgressBar;
+        setType();
+        setIcon();
+        setAction();
+        showProgressPercentage();
+        setProgressMax();
+        setSwipeToDismiss();
+        setMessage();
+        // only toggle overlayLayout visibility if already shown
+        if (isShown()) {
+            showOverlayLayout();
+        }
+    }
+
+    /**
+     * Updates the color and alpha of overlayLayout.
+     *
+     * @param overlayColor       R.color id.
+     * @param overlayLayoutAlpha Alpha between 0f to 1f. Default = 0.8f.
+     */
+    SnackProgressBarCore setOverlayLayout(int overlayColor, float overlayLayoutAlpha) {
+        overlayLayout.setBackgroundColor(ContextCompat.getColor(getContext(), overlayColor));
+        overlayLayout.setAlpha(overlayLayoutAlpha);
+        return this;
     }
 
     /**
@@ -104,6 +131,8 @@ class SnackProgressBarCore extends BaseTransientBottomBar<SnackProgressBarCore> 
 
     @Override
     public void show() {
+        // show overLayLayout
+        showOverlayLayout();
         // use default SnackManager if it is CoordinatorLayout
         if (useDefaultHandler) {
             setDuration(duration);
@@ -136,16 +165,22 @@ class SnackProgressBarCore extends BaseTransientBottomBar<SnackProgressBarCore> 
         super.show();
     }
 
+    @Override
+    public void dismiss() {
+        super.dismiss();
+        // remove overlayLayout after dismissed
+        parentView.removeView(overlayLayout);
+    }
+
     /**
      * Sets the layout based on SnackProgressBar type.
      * Note: Layout for action is handled by {@link SnackProgressBarLayout}
-     *
-     * @param type Type of SnackProgressBar.
      */
-    private SnackProgressBarCore setType(int type) {
+    private SnackProgressBarCore setType() {
         ProgressBar determinateProgressBar = snackProgressBarLayout.getDeterminateProgressBar();
         ProgressBar indeterminateProgressBar = snackProgressBarLayout.getIndeterminateProgressBar();
         // update view
+        int type = snackProgressBar.getType();
         switch (type) {
             case SnackProgressBar.TYPE_ACTION:
             case SnackProgressBar.TYPE_MESSAGE:
@@ -166,11 +201,10 @@ class SnackProgressBarCore extends BaseTransientBottomBar<SnackProgressBarCore> 
 
     /**
      * Sets the icon of SnackProgressBar.
-     *
-     * @param iconBitmap Bitmap of icon.
-     * @param iconResId  The resource identifier of the icon to be displayed.
      */
-    private SnackProgressBarCore setIcon(Bitmap iconBitmap, int iconResId) {
+    private SnackProgressBarCore setIcon() {
+        Bitmap iconBitmap = snackProgressBar.getIconBitmap();
+        int iconResId = snackProgressBar.getIconResource();
         ImageView iconImage = snackProgressBarLayout.getIconImage();
         if (iconBitmap != null) {
             iconImage.setImageBitmap(iconBitmap);
@@ -186,13 +220,11 @@ class SnackProgressBarCore extends BaseTransientBottomBar<SnackProgressBarCore> 
 
     /**
      * Set the action to be displayed. Only will be shown for TYPE_ACTION.
-     *
-     * @param type                  Type of SnackProgressBar.
-     * @param action                Action to display.
-     * @param onActionClickListener Callback to be invoked when the action is clicked.
      */
-    private SnackProgressBarCore setAction(int type, String action,
-                                           final SnackProgressBar.OnActionClickListener onActionClickListener) {
+    private SnackProgressBarCore setAction() {
+        int type = snackProgressBar.getType();
+        String action = snackProgressBar.getAction();
+        final SnackProgressBar.OnActionClickListener onActionClickListener = snackProgressBar.getOnActionClickListener();
         if (type == SnackProgressBar.TYPE_ACTION) {
             // set the text
             TextView actionText = snackProgressBarLayout.getActionText();
@@ -217,11 +249,10 @@ class SnackProgressBarCore extends BaseTransientBottomBar<SnackProgressBarCore> 
 
     /**
      * Set whether to show progressText. Only will be shown for TYPE_DETERMINATE.
-     *
-     * @param type                   Type of SnackProgressBar.
-     * @param showProgressPercentage Whether to show progressText.
      */
-    private SnackProgressBarCore showProgressPercentage(int type, boolean showProgressPercentage) {
+    private SnackProgressBarCore showProgressPercentage() {
+        int type = snackProgressBar.getType();
+        boolean showProgressPercentage = snackProgressBar.isShowProgressPercentage();
         TextView progressText = snackProgressBarLayout.getProgressText();
         if (showProgressPercentage && type == SnackProgressBar.TYPE_DETERMINATE) {
             progressText.setVisibility(View.VISIBLE);
@@ -233,10 +264,9 @@ class SnackProgressBarCore extends BaseTransientBottomBar<SnackProgressBarCore> 
 
     /**
      * Set the max progress for progressBar.
-     *
-     * @param progressMax Max progress for progressBar.
      */
-    private SnackProgressBarCore setProgressMax(int progressMax) {
+    private SnackProgressBarCore setProgressMax() {
+        int progressMax = snackProgressBar.getProgressMax();
         snackProgressBarLayout.getDeterminateProgressBar().setMax(progressMax);
         return this;
     }
@@ -244,21 +274,32 @@ class SnackProgressBarCore extends BaseTransientBottomBar<SnackProgressBarCore> 
     /**
      * Set whether user can swipe to dismiss.
      * This only works for TYPE_ACTION and TYPE_MESSAGE.
-     *
-     * @param swipeToDismiss Whether user can swipe to dismiss.
      */
-    private SnackProgressBarCore setSwipeToDismiss(boolean swipeToDismiss) {
+    private SnackProgressBarCore setSwipeToDismiss() {
+        boolean swipeToDismiss = snackProgressBar.isSwipeToDismiss();
         snackProgressBarLayout.setSwipeToDismiss(swipeToDismiss);
         return this;
     }
 
     /**
      * Sets the message of SnackProgressBar.
-     *
-     * @param message Message of SnackProgressBar.
      */
-    private SnackProgressBarCore setMessage(String message) {
+    private SnackProgressBarCore setMessage() {
+        String message = snackProgressBar.getMessage();
         snackProgressBarLayout.getMessageText().setText(message);
+        return this;
+    }
+
+    /**
+     * Shows the overlayLayout based on whether user input is allowed.
+     */
+    private SnackProgressBarCore showOverlayLayout() {
+        boolean isAllowUserInput = snackProgressBar.isAllowUserInput();
+        if (!isAllowUserInput) {
+            overlayLayout.setVisibility(View.VISIBLE);
+        } else {
+            overlayLayout.setVisibility(View.GONE);
+        }
         return this;
     }
 

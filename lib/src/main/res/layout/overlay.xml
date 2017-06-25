@@ -7,6 +7,4 @@
     android:background="@android:color/white"
     android:clickable="true"
     android:longClickable="true"
-    android:orientation="vertical">
-
-</FrameLayout>
+    android:visibility="gone" />

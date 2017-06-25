@@ -7,7 +7,6 @@ import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BaseTransientBottomBar;
 import android.support.design.widget.CoordinatorLayout;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -64,6 +63,10 @@ public class SnackProgressBarManager {
      * Default progressBar color as per Material Design i.e. R.color.colorAccent.
      */
     public static final int PROGRESSBAR_COLOR_DEFAULT = R.color.colorAccent;
+    /**
+     * Default overlayLayout color i.e. android.R.color.white.
+     */
+    public static final int OVERLAY_COLOR_DEFAULT = android.R.color.white;
 
     /**
      * Interface definition for a callback to be invoked when the SnackProgressBar is shown or dismissed.
@@ -113,6 +116,7 @@ public class SnackProgressBarManager {
     private int messageTextColor = MESSAGE_COLOR_DEFAULT;
     private int actionTextColor = ACTION_COLOR_DEFAULT;
     private int progressBarColor = PROGRESSBAR_COLOR_DEFAULT;
+    private int overlayColor = OVERLAY_COLOR_DEFAULT;
     private float overlayLayoutAlpha = 0.8f;
 
     /**
@@ -324,12 +328,30 @@ public class SnackProgressBarManager {
     }
 
     /**
-     * Sets the transparency of the OverlayLayout which blocks user input.
+     * Sets the transparency of the overlayLayout which blocks user input.
      *
      * @param overlayLayoutAlpha Alpha between 0f to 1f. Default = 0.8f.
      */
     public SnackProgressBarManager setOverlayLayoutAlpha(@FloatRange(from = 0f, to = 1f) float overlayLayoutAlpha) {
         this.overlayLayoutAlpha = overlayLayoutAlpha;
+        if (currentCore != null) {
+            currentCore.setOverlayLayout(overlayColor, overlayLayoutAlpha);
+        }
+        return this;
+    }
+
+    /**
+     * Sets the overlayLayout color.
+     *
+     * @param colorId R.color id.
+     * @see #OVERLAY_COLOR_DEFAULT
+     */
+    public SnackProgressBarManager setOverlayLayoutColor(@ColorRes int colorId) {
+        overlayColor = colorId;
+        // update the UI now if applicable
+        if (currentCore != null) {
+            currentCore.setOverlayLayout(overlayColor, overlayLayoutAlpha);
+        }
         return this;
     }
 
@@ -459,16 +481,10 @@ public class SnackProgressBarManager {
                     duration = LENGTH_SHORT;
                 }
             }
-            final LayoutInflater inflater = LayoutInflater.from(parentView.getContext());
-            final View overlayLayout = inflater.inflate(R.layout.overlay, parentView, false);
-            overlayLayout.setAlpha(overlayLayoutAlpha);
-            // add overlayLayout if does not allow user input
-            if (!snackProgressBar.isAllowUserInput()) {
-                parentView.addView(overlayLayout);
-            }
             // create SnackProgressBarCore
             final SnackProgressBarCore snackProgressBarCore = SnackProgressBarCore.make(
                     parentView, snackProgressBar, duration, viewsToMove);
+            snackProgressBarCore.setOverlayLayout(overlayColor, overlayLayoutAlpha);
             snackProgressBarCore.setColor(backgroundColor, messageTextColor, actionTextColor, progressBarColor);
             final int finalDuration = duration;
             snackProgressBarCore.addCallback(new BaseTransientBottomBar.BaseCallback<SnackProgressBarCore>() {
@@ -487,10 +503,6 @@ public class SnackProgressBarManager {
                 public void onDismissed(SnackProgressBarCore snackProgressBarCore, int event) {
                     // reset current
                     currentCore = null;
-                    // remove overlayLayout
-                    if (!snackProgressBar.isAllowUserInput()) {
-                        parentView.removeView(overlayLayout);
-                    }
                     // callback onDisplayListener
                     if (onDisplayListener != null && onDisplayId != ON_DISPLAY_ID_DEFAULT) {
                         onDisplayListener.onDismissed(onDisplayId);

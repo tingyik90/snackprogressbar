@@ -260,7 +260,6 @@ class SnackProgressBarLayout extends LinearLayout implements BaseTransientBottom
                         .setDuration(ANIMATION_DURATION).start();
             }
         }
-
     }
 
     // animation as per original Snackbar class
