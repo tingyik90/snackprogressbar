@@ -1,3 +1,5 @@
+[![](https://jitpack.io/v/tingyik90/snackprogressbar.svg)](https://jitpack.io/#tingyik90/snackprogressbar)
+
 # SnackProgressBar
 Enhanced Snackbar for Android.
 
