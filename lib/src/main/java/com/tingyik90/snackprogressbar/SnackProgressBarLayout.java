@@ -362,13 +362,13 @@ class SnackProgressBarLayout extends LinearLayout implements BaseTransientBottom
                         parentView.setTranslationX(deltaX);
                         // animate alpha as per behaviour specified in BaseTransientBottomBar for CoordinatorLayout
                         float totalWidth = parentView.getMeasuredWidth();
-                        float fractionTravelled = deltaX / totalWidth;
+                        float fractionTravelled = Math.abs(deltaX / totalWidth);
                         if (fractionTravelled < START_ALPHA_SWIPE_DISTANCE) {
                             parentView.setAlpha(1f);
                         } else if (fractionTravelled > END_ALPHA_SWIPE_DISTANCE) {
                             parentView.setAlpha(0f);
                         } else {
-                            parentView.setAlpha((fractionTravelled - START_ALPHA_SWIPE_DISTANCE)
+                            parentView.setAlpha(1 - (fractionTravelled - START_ALPHA_SWIPE_DISTANCE)
                                     / (END_ALPHA_SWIPE_DISTANCE - START_ALPHA_SWIPE_DISTANCE));
                         }
                         break;
