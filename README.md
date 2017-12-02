@@ -147,9 +147,10 @@ allprojects {
 In the app Gradle:
 ```Gradle
 dependencies {
-    compile 'com.github.tingyik90:snackprogressbar:2.2'
+    compile 'com.github.tingyik90:snackprogressbar:3.0'
 }
 ```
+NOTE: The latest java version is v2.2 and may include unfixed bugs.
 
 ## License
 Copyright 2017 Saw Ting Yik
