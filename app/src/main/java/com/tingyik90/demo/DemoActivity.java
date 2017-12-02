@@ -78,8 +78,8 @@ public class DemoActivity extends AppCompatActivity {
     }
 
     public void actionBtnClick(View view) {
-        // call to show via storeId, dismiss after duration LENGTH_LONG
-        snackProgressBarManager.show(100, SnackProgressBarManager.LENGTH_LONG);
+        // call to show via storeId, dismiss after duration LENGTH_SHORT
+        snackProgressBarManager.show(100, SnackProgressBarManager.LENGTH_SHORT);
     }
 
     public void actionLongBtnClick(View view) {
@@ -87,7 +87,8 @@ public class DemoActivity extends AppCompatActivity {
                 SnackProgressBar.TYPE_ACTION, "TYPE_ACTION - If the action text is too long, a higher layout is used.")
                 .setAction("LONG ACTION NAME", null)
                 .setSwipeToDismiss(true);
-        snackProgressBarManager.show(actionLongType, SnackProgressBarManager.LENGTH_LONG);
+        // call to show 4 seconds
+        snackProgressBarManager.show(actionLongType, 4000);
     }
 
     public void determinateBtnClick(View view) {
@@ -122,9 +123,11 @@ public class DemoActivity extends AppCompatActivity {
                 i++;
                 // get the currently showing indeterminateType and change the message
                 SnackProgressBar snackProgressBar = snackProgressBarManager.getLastShown();
-                snackProgressBar.setMessage("TYPE_INDETERMINATE - " + i);
-                // calling updateTo() will not hide and show again the SnackProgressBar
-                snackProgressBarManager.updateTo(snackProgressBar);
+                if (snackProgressBar != null) {
+                    snackProgressBar.setMessage("TYPE_INDETERMINATE - " + i);
+                    // calling updateTo() will not hide and show again the SnackProgressBar
+                    snackProgressBarManager.updateTo(snackProgressBar);
+                }
             }
 
             @Override
@@ -134,19 +137,22 @@ public class DemoActivity extends AppCompatActivity {
         }.start();
     }
 
+    /* click multiple times to look at the effect of queue. */
     public void messageBtnClick(View view) {
         // grab the stored SnackProgressBar and set the message.
-        snackProgressBarManager.getSnackProgressBar(300).setMessage("TYPE_MESSAGE - " + queue + ". " +
-                "The height of SnackProgressBar is increased.");
-        // call to show via storeId, dismiss after duration LENGTH_LONG, assign an onDisplayId for callback.
-        snackProgressBarManager.show(300, SnackProgressBarManager.LENGTH_LONG, queue);
-        queue++;
-        /* click multiple times to look at the effect of queue. */
+        SnackProgressBar snackProgressBar = snackProgressBarManager.getSnackProgressBar(300);
+        if (snackProgressBar != null) {
+            snackProgressBar.setMessage("TYPE_MESSAGE - " + queue + ". " +
+                    "The height of SnackProgressBar is increased.");
+            // call to show via storeId, dismiss after duration LENGTH_LONG, assign an onDisplayId for callback.
+            snackProgressBarManager.show(300, SnackProgressBarManager.LENGTH_LONG, queue);
+            queue++;
+        }
     }
 
+    /* after clicking messageBtn multiple times, click this to clear all queued SnackProgressBars */
     public void clearBtnClick(View view) {
         // clear all queued SnackProgressBars
         snackProgressBarManager.dismissAll();
-        /* after clicking messageBtn multiple times, click this to clear all queued SnackProgressBars */
     }
 }

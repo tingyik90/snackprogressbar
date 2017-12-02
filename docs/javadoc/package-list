@@ -1,1 +1,4 @@
+$dokka.format:html
+$dokka.linkExtension:html
+
 com.tingyik90.snackprogressbar

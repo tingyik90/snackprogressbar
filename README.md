@@ -106,7 +106,7 @@ snackProgressBarManager.show(storeId, SnackProgressBarManager.LENGTH_LONG);
 ```
 
 Calling `show()` will put the SnackProgressBar into a queue, which will be shown after those in queue before it has been dismissed
-(by user action or set duration).
+(by user action or set showDuration).
 
 Note: If LENGTH_INDEFINITE is specified for the queued SnackProgressBar, adding a new SnackProgressBar into the queue will cause 
 the previous SnackProgressBar to use LENGTH_SHORT instead, dismissed and then show the new SnackProgressBar.
