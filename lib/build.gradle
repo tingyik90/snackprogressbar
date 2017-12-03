@@ -39,7 +39,6 @@ repositories {
 }
 
 dokka {
-    moduleName = 'SnackProgressBar'
-    outputFormat = 'html'
+    outputFormat = 'gfm'
     outputDirectory = 'D:/AndroidStudioProjects/snackprogressbar/docs'
 }
