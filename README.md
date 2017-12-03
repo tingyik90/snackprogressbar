@@ -130,7 +130,7 @@ Call `clearAll()` to dismiss the currently showing SnackProgressBar and clear al
 For `TYPE_DETERMINATE`, call `setProgress()` to set the progress of ProgressBar.
 
 ## JavaDoc
-For further information, see https://tingyik90.github.io/snackprogressbar/javadoc/.
+For further information, see https://tingyik90.github.io/snackprogressbar/lib/.
 
 Watch the demo video at https://youtu.be/g5lLQtrthUc.
 
@@ -150,7 +150,7 @@ dependencies {
     compile 'com.github.tingyik90:snackprogressbar:3.0'
 }
 ```
-NOTE: The latest java version is v2.2 and may include unfixed bugs.
+NOTE: The latest java version is v2.2 and may include unfixed bugs. The DemoActivity is still in Java.
 
 ## License
 Copyright 2017 Saw Ting Yik
