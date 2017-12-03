@@ -69,16 +69,16 @@ class SnackProgressBar(@Type private var type: Long, private var message: String
     /**
      * Internal constructor for duplicating SnackProgressBar.
      */
-    constructor (type: Long,
-                 message: String,
-                 action: String,
-                 iconBitmap: Bitmap?,
-                 iconResId: Int,
-                 progressMax: Int,
-                 allowUserInput: Boolean,
-                 swipeToDismiss: Boolean,
-                 showProgressPercentage: Boolean,
-                 onActionClickListener: OnActionClickListener?) : this(type, message) {
+    internal constructor (type: Long,
+                          message: String,
+                          action: String,
+                          iconBitmap: Bitmap?,
+                          iconResId: Int,
+                          progressMax: Int,
+                          allowUserInput: Boolean,
+                          swipeToDismiss: Boolean,
+                          showProgressPercentage: Boolean,
+                          onActionClickListener: OnActionClickListener?) : this(type, message) {
         this.action = action
         this.iconBitmap = iconBitmap
         this.iconResId = iconResId
