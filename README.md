@@ -147,7 +147,7 @@ allprojects {
 In the app Gradle:
 ```Gradle
 dependencies {
-    compile 'com.github.tingyik90:snackprogressbar:3.1'
+    compile 'com.github.tingyik90:snackprogressbar:3.2'
 }
 ```
 NOTE: The latest java version is v2.2 and may include unfixed bugs. The DemoActivity is still in Java.
