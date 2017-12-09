@@ -36,7 +36,7 @@
         <LinearLayout
             android:id="@+id/snackProgressBar_layout_main"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/snackProgressBar_height_single"
+            android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <ImageView
@@ -53,7 +53,7 @@
             <TextView
                 android:id="@+id/snackProgressBar_txt_message"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="@dimen/snackProgressBar_height_single"
                 android:layout_gravity="center"
                 android:layout_weight="100"
                 android:clickable="false"
