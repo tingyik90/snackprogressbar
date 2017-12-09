@@ -4,6 +4,7 @@ import android.support.annotation.*
 import android.support.annotation.IntRange
 import android.support.design.widget.BaseTransientBottomBar
 import android.support.design.widget.CoordinatorLayout
+import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -102,6 +103,8 @@ class SnackProgressBarManager(view: View) {
     private var actionTextColor = ACTION_COLOR_DEFAULT
     private var progressBarColor = PROGRESSBAR_COLOR_DEFAULT
     private var overlayColor = OVERLAY_COLOR_DEFAULT
+    private var textSize = parentView.resources.getDimension(R.dimen.text_body)
+    private var maxLines = 2
     private var overlayLayoutAlpha = 0.8f
     private var onDisplayListener: OnDisplayListener? = null
 
@@ -307,6 +310,28 @@ class SnackProgressBarManager(view: View) {
     }
 
     /**
+     * Sets the text size of SnackProgressBar.
+     *
+     * @param sp Font size in scale-independent pixels.
+     */
+    fun setTextSize(sp: Float): SnackProgressBarManager {
+        textSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, parentView.resources.displayMetrics)
+        currentCore?.setTextSize(textSize)
+        return this
+    }
+
+    /**
+     * Sets the max lines for message.
+     *
+     * @param maxLines Number of lines.
+     */
+    fun setMessageMaxLines(maxLines: Int): SnackProgressBarManager {
+        this.maxLines = maxLines
+        currentCore?.setMaxLines(maxLines)
+        return this
+    }
+
+    /**
      * Sets the transparency of the overlayLayout which blocks user input.
      *
      * @param alpha Alpha between 0f to 1f. Default = 0.8f.
@@ -450,6 +475,8 @@ class SnackProgressBarManager(view: View) {
                     parentView, snackProgressBar, duration, viewsToMove)
             snackProgressBarCore.setOverlayLayout(overlayColor, overlayLayoutAlpha)
             snackProgressBarCore.setColor(backgroundColor, messageTextColor, actionTextColor, progressBarColor)
+            snackProgressBarCore.setTextSize(textSize)
+            snackProgressBarCore.setMaxLines(maxLines)
             val finalDuration = duration
             snackProgressBarCore.addCallback(object : BaseTransientBottomBar.BaseCallback<SnackProgressBarCore>() {
                 override fun onShown(snackProgressBarCore: SnackProgressBarCore?) {
