@@ -93,7 +93,7 @@ internal class SnackProgressBarCore private constructor(
      * @param overlayColor       R.color id.
      * @param overlayLayoutAlpha Alpha between 0f to 1f. Default = 0.8f.
      */
-    fun setOverlayLayout(overlayColor: Int, overlayLayoutAlpha: Float): SnackProgressBarCore {
+    internal fun setOverlayLayout(overlayColor: Int, overlayLayoutAlpha: Float): SnackProgressBarCore {
         overlayLayout.setBackgroundColor(ContextCompat.getColor(context, overlayColor))
         overlayLayout.alpha = overlayLayoutAlpha
         return this
@@ -107,8 +107,28 @@ internal class SnackProgressBarCore private constructor(
      * @param actionTextColor  R.color id.
      * @param progressBarColor R.color id.
      */
-    fun setColor(backgroundColor: Int, messageTextColor: Int, actionTextColor: Int, progressBarColor: Int): SnackProgressBarCore {
+    internal fun setColor(backgroundColor: Int, messageTextColor: Int, actionTextColor: Int, progressBarColor: Int): SnackProgressBarCore {
         snackProgressBarLayout.setColor(backgroundColor, messageTextColor, actionTextColor, progressBarColor)
+        return this
+    }
+
+    /**
+     * Sets the text size of SnackProgressBar.
+     *
+     * @param px Font size in pixels.
+     */
+    internal fun setTextSize(px: Float): SnackProgressBarCore {
+        snackProgressBarLayout.setTextSize(px)
+        return this
+    }
+
+    /**
+     * Sets the max lines for message.
+     *
+     * @param maxLines Number of lines.
+     */
+    internal fun setMaxLines(maxLines: Int): SnackProgressBarCore {
+        snackProgressBarLayout.setMaxLines(maxLines)
         return this
     }
 
@@ -117,7 +137,7 @@ internal class SnackProgressBarCore private constructor(
      *
      * @param progress Progress of the ProgressBar.
      */
-    fun setProgress(@IntRange(from = 0) progress: Int): SnackProgressBarCore {
+    internal fun setProgress(@IntRange(from = 0) progress: Int): SnackProgressBarCore {
         val determinateProgressBar = snackProgressBarLayout.determinateProgressBar
         determinateProgressBar.progress = progress
         val progress100 = (progress.toFloat() / determinateProgressBar.max * 100).toInt()
