@@ -20,5 +20,6 @@
 
     <!-- text -->
     <dimen name="text_body">14sp</dimen>
+    <dimen name="text_body_dp">14dp</dimen>
 
 </resources>
