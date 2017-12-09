@@ -9,6 +9,7 @@ import android.support.v4.content.ContextCompat
 import android.support.v4.view.ViewCompat
 import android.support.v4.view.animation.FastOutSlowInInterpolator
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.VelocityTracker
 import android.view.View
@@ -53,6 +54,8 @@ internal class SnackProgressBarLayout @JvmOverloads constructor(
     private val swipeOutVelocity = 800f
     private val heightSingle = resources.getDimension(R.dimen.snackProgressBar_height_single).toInt()        // height as per Material Design
     private val heightMulti = resources.getDimension(R.dimen.snackProgressBar_height_multi).toInt()         // height as per Material Design
+    private val heightActionNextLine = resources.getDimension(R.dimen.snackProgressBar_height_actionNextLine).toInt()
+    private val defaultTextSizeDp = resources.getDimension(R.dimen.text_body_dp).toInt()      // use fixed dp for comparison purpose
 
     private var isCoordinatorLayout: Boolean = false
     private var swipeToDismiss: Boolean = false
@@ -76,7 +79,7 @@ internal class SnackProgressBarLayout @JvmOverloads constructor(
      *
      * @param onBarTouchListener The callback that will run. This value may be null.
      */
-    fun setOnBarTouchListener(onBarTouchListener: OnBarTouchListener?) {
+    internal fun setOnBarTouchListener(onBarTouchListener: OnBarTouchListener?) {
         this.onBarTouchListener = onBarTouchListener
     }
 
@@ -85,7 +88,7 @@ internal class SnackProgressBarLayout @JvmOverloads constructor(
      *
      * @param viewsToMove Views to animate when the SnackProgressBar is shown or dismissed.
      */
-    fun setViewsToMove(viewsToMove: Array<View>?) {
+    internal fun setViewsToMove(viewsToMove: Array<View>?) {
         this.viewsToMove = viewsToMove
     }
 
@@ -97,8 +100,8 @@ internal class SnackProgressBarLayout @JvmOverloads constructor(
      * @param actionTextColor  R.color id.
      * @param progressBarColor R.color id.
      */
-    fun setColor(@ColorRes backgroundColor: Int, @ColorRes messageTextColor: Int,
-                 @ColorRes actionTextColor: Int, @ColorRes progressBarColor: Int) {
+    internal fun setColor(@ColorRes backgroundColor: Int, @ColorRes messageTextColor: Int,
+                          @ColorRes actionTextColor: Int, @ColorRes progressBarColor: Int) {
         backgroundLayout.setBackgroundColor(ContextCompat.getColor(context, backgroundColor))
         messageText.setTextColor(ContextCompat.getColor(context, messageTextColor))
         actionText.setTextColor(ContextCompat.getColor(context, actionTextColor))
@@ -110,59 +113,89 @@ internal class SnackProgressBarLayout @JvmOverloads constructor(
     }
 
     /**
+     * Sets the text size of SnackProgressBar.
+     *
+     * @param px Font size in pixels.
+     */
+    internal fun setTextSize(px: Float) {
+        messageText.setTextSize(TypedValue.COMPLEX_UNIT_PX, px)
+        actionText.setTextSize(TypedValue.COMPLEX_UNIT_PX, px)
+        actionNextLineText.setTextSize(TypedValue.COMPLEX_UNIT_PX, px)
+        progressText.setTextSize(TypedValue.COMPLEX_UNIT_PX, px)
+    }
+
+    /**
+     * Sets the max lines for message.
+     *
+     * @param maxLines Number of lines.
+     */
+    internal fun setMaxLines(maxLines: Int) {
+        messageText.maxLines = maxLines
+    }
+
+    /**
      * Sets whether user can swipe to dismiss.
      *
      * @param swipeToDismiss Whether user can swipe to dismiss.
      * @see .configureSwipeToDismiss
      */
-    fun setSwipeToDismiss(swipeToDismiss: Boolean) {
+    internal fun setSwipeToDismiss(swipeToDismiss: Boolean) {
         this.swipeToDismiss = swipeToDismiss
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-        var remeasure = false
-        val isMultiLine = messageText.layout.lineCount > 1
+        val lineCount = messageText.lineCount
+        val textSize = messageText.textSize.toInt()
         val hasAction = !actionText.text.toString().isEmpty()
         // put the action into next line if width is more than 25% of total width
         val isActionNextLine = actionText.measuredWidth.toFloat() / backgroundLayout.measuredWidth.toFloat() > 0.25f
         if (hasAction) {
             if (isActionNextLine) {
-                if (actionNextLineLayout.visibility != View.VISIBLE) {
-                    actionText.visibility = View.GONE
-                    actionNextLineLayout.visibility = View.VISIBLE
-                    remeasure = true
+                actionText.visibility = View.GONE
+                // set actionNextLineLayout height
+                val height = if (textSize <= defaultTextSizeDp) {
+                    heightActionNextLine
+                } else {
+                    heightActionNextLine + (textSize - defaultTextSizeDp)
                 }
+                val layoutParams = actionNextLineLayout.layoutParams as LinearLayout.LayoutParams
+                if (layoutParams.height != height) {
+                    layoutParams.height = height
+                    actionNextLineLayout.layoutParams = layoutParams
+                }
+                actionNextLineLayout.visibility = View.VISIBLE
             } else {
-                if (actionText.visibility != View.VISIBLE) {
-                    actionText.visibility = View.VISIBLE
-                    actionNextLineLayout.visibility = View.GONE
-                    remeasure = true
-                }
+                actionText.visibility = View.VISIBLE
+                actionNextLineLayout.visibility = View.GONE
             }
         } else {
-            if (actionNextLineLayout.visibility == View.VISIBLE || actionText.visibility == View.VISIBLE) {
-                actionText.visibility = View.GONE
-                actionNextLineLayout.visibility = View.GONE
-                remeasure = true
-            }
+            actionText.visibility = View.GONE
+            actionNextLineLayout.visibility = View.GONE
         }
         // set layout height according to message length
-        val layoutParams = mainLayout.layoutParams as LinearLayout.LayoutParams
-        if (isMultiLine) {
-            if (layoutParams.height != heightMulti) {
-                layoutParams.height = heightMulti
-                mainLayout.layoutParams = layoutParams
-                remeasure = true
+        val height: Int = when (lineCount) {
+            1 -> {
+                if (textSize <= defaultTextSizeDp) {
+                    heightSingle
+                } else {
+                    heightSingle + (textSize - defaultTextSizeDp)
+                }
             }
-        } else {
-            if (layoutParams.height != heightSingle) {
-                layoutParams.height = heightSingle
-                mainLayout.layoutParams = layoutParams
-                remeasure = true
+            2 -> {
+                if (textSize <= defaultTextSizeDp) {
+                    heightMulti
+                } else {
+                    heightMulti + 2 * (textSize - defaultTextSizeDp)
+                }
             }
+            else -> (heightMulti + (lineCount * textSize - 2 * defaultTextSizeDp))
         }
-        if (remeasure) {
+        val layoutParams = messageText.layoutParams as LinearLayout.LayoutParams
+        if (layoutParams.height != height) {
+            layoutParams.height = height
+            messageText.layoutParams = layoutParams
+            // remeasure after height change
             super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         }
     }
