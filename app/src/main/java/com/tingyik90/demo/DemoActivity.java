@@ -28,6 +28,12 @@ public class DemoActivity extends AppCompatActivity {
                 .setViewToMove(floatingActionButton)
                 // (optional) change progressBar color, default = R.color.colorAccent
                 .setProgressBarColor(R.color.colorAccent)
+                // (optional) change background color, default = BACKGROUND_COLOR_DEFAULT (#FF323232)
+                .setBackgroundColor(SnackProgressBarManager.BACKGROUND_COLOR_DEFAULT)
+                // (optional) change text size, default = 14sp
+                .setTextSize(14)
+                // (optional) set max lines, default = 2
+                .setMessageMaxLines(4)
                 // (optional) register onDisplayListener
                 .setOnDisplayListener(new SnackProgressBarManager.OnDisplayListener() {
                     @Override
@@ -143,7 +149,7 @@ public class DemoActivity extends AppCompatActivity {
         SnackProgressBar snackProgressBar = snackProgressBarManager.getSnackProgressBar(300);
         if (snackProgressBar != null) {
             snackProgressBar.setMessage("TYPE_MESSAGE - " + queue + ". " +
-                    "The height of SnackProgressBar is increased.");
+                    "The height of SnackProgressBar is increased when there is multiple lines of message.");
             // call to show via storeId, dismiss after duration LENGTH_LONG, assign an onDisplayId for callback.
             snackProgressBarManager.show(300, SnackProgressBarManager.LENGTH_LONG, queue);
             queue++;
