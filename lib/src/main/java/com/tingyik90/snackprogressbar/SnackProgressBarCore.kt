@@ -106,9 +106,10 @@ internal class SnackProgressBarCore private constructor(
      * @param messageTextColor R.color id.
      * @param actionTextColor  R.color id.
      * @param progressBarColor R.color id.
+     * @param progressTextColor R.color id.
      */
-    internal fun setColor(backgroundColor: Int, messageTextColor: Int, actionTextColor: Int, progressBarColor: Int): SnackProgressBarCore {
-        snackProgressBarLayout.setColor(backgroundColor, messageTextColor, actionTextColor, progressBarColor)
+    internal fun setColor(backgroundColor: Int, messageTextColor: Int, actionTextColor: Int, progressBarColor: Int, progressTextColor: Int): SnackProgressBarCore {
+        snackProgressBarLayout.setColor(backgroundColor, messageTextColor, actionTextColor, progressBarColor, progressTextColor)
         return this
     }
 

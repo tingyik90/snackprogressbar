@@ -80,6 +80,11 @@ class SnackProgressBarManager(view: View) {
         @JvmField
         val PROGRESSBAR_COLOR_DEFAULT = R.color.colorAccent
         /**
+         * Default progressText color i.e. android.R.color.white.
+         */
+        @JvmField
+        val PROGRESSTEXT_COLOR_DEFAULT = android.R.color.white
+        /**
          * Default overlayLayout color i.e. android.R.color.white.
          */
         @JvmField
@@ -102,6 +107,7 @@ class SnackProgressBarManager(view: View) {
     private var messageTextColor = MESSAGE_COLOR_DEFAULT
     private var actionTextColor = ACTION_COLOR_DEFAULT
     private var progressBarColor = PROGRESSBAR_COLOR_DEFAULT
+    private var progressTextColor = PROGRESSTEXT_COLOR_DEFAULT
     private var overlayColor = OVERLAY_COLOR_DEFAULT
     private var textSize = parentView.resources.getDimension(R.dimen.text_body)
     private var maxLines = 2
@@ -185,8 +191,8 @@ class SnackProgressBarManager(view: View) {
      */
     fun show(@OneUp storeId: Int, @ShowDuration duration: Long) {
         val snackProgressBar = storedBars[storeId]
-        snackProgressBar?.run { addToQueue(this, duration, onDisplayIdDefault) } ?:
-                throw IllegalArgumentException("SnackProgressBar with storeId = $storeId is not found!")
+        snackProgressBar?.run { addToQueue(this, duration, onDisplayIdDefault) }
+                ?: throw IllegalArgumentException("SnackProgressBar with storeId = $storeId is not found!")
     }
 
     /**
@@ -203,8 +209,8 @@ class SnackProgressBarManager(view: View) {
      */
     fun show(@OneUp storeId: Int, @ShowDuration duration: Long, @OneUp onDisplayId: Int) {
         val snackProgressBar = storedBars[storeId]
-        snackProgressBar?.run { show(this, duration, onDisplayId) } ?:
-                throw IllegalArgumentException("SnackProgressBar with storeId = $storeId is not found!")
+        snackProgressBar?.run { show(this, duration, onDisplayId) }
+                ?: throw IllegalArgumentException("SnackProgressBar with storeId = $storeId is not found!")
     }
 
     /**
@@ -245,8 +251,8 @@ class SnackProgressBarManager(view: View) {
      */
     fun updateTo(@OneUp storeId: Int) {
         val snackProgressBar = storedBars[storeId]
-        snackProgressBar?.run { updateTo(this) } ?:
-                throw IllegalArgumentException("SnackProgressBar with storeId = $storeId is not found!")
+        snackProgressBar?.run { updateTo(this) }
+                ?: throw IllegalArgumentException("SnackProgressBar with storeId = $storeId is not found!")
     }
 
     /**
@@ -364,7 +370,7 @@ class SnackProgressBarManager(view: View) {
     fun setBackgroundColor(@ColorRes colorId: Int): SnackProgressBarManager {
         backgroundColor = colorId
         // update the UI now if applicable
-        currentCore?.setColor(backgroundColor, messageTextColor, actionTextColor, progressBarColor)
+        currentCore?.setColor(backgroundColor, messageTextColor, actionTextColor, progressBarColor, progressTextColor)
         return this
     }
 
@@ -377,7 +383,7 @@ class SnackProgressBarManager(view: View) {
     fun setMessageTextColor(@ColorRes colorId: Int): SnackProgressBarManager {
         messageTextColor = colorId
         // update the UI now if applicable
-        currentCore?.setColor(backgroundColor, messageTextColor, actionTextColor, progressBarColor)
+        currentCore?.setColor(backgroundColor, messageTextColor, actionTextColor, progressBarColor, progressTextColor)
         return this
     }
 
@@ -390,7 +396,7 @@ class SnackProgressBarManager(view: View) {
     fun setActionTextColor(@ColorRes colorId: Int): SnackProgressBarManager {
         actionTextColor = colorId
         // update the UI now if applicable
-        currentCore?.setColor(backgroundColor, messageTextColor, actionTextColor, progressBarColor)
+        currentCore?.setColor(backgroundColor, messageTextColor, actionTextColor, progressBarColor, progressTextColor)
         return this
     }
 
@@ -403,7 +409,20 @@ class SnackProgressBarManager(view: View) {
     fun setProgressBarColor(@ColorRes colorId: Int): SnackProgressBarManager {
         progressBarColor = colorId
         // update the UI now if applicable
-        currentCore?.setColor(backgroundColor, messageTextColor, actionTextColor, progressBarColor)
+        currentCore?.setColor(backgroundColor, messageTextColor, actionTextColor, progressBarColor, progressTextColor)
+        return this
+    }
+
+    /**
+     * Sets the ProgressText color.
+     *
+     * @param colorId R.color id.
+     * @see .PROGRESSTEXT_COLOR_DEFAULT
+     */
+    fun setProgressTextColor(@ColorRes colorId: Int): SnackProgressBarManager {
+        progressTextColor = colorId
+        // update the UI now if applicable
+        currentCore?.setColor(backgroundColor, messageTextColor, actionTextColor, progressBarColor, progressTextColor)
         return this
     }
 
@@ -474,7 +493,7 @@ class SnackProgressBarManager(view: View) {
             val snackProgressBarCore = SnackProgressBarCore.make(
                     parentView, snackProgressBar, duration, viewsToMove)
             snackProgressBarCore.setOverlayLayout(overlayColor, overlayLayoutAlpha)
-            snackProgressBarCore.setColor(backgroundColor, messageTextColor, actionTextColor, progressBarColor)
+            snackProgressBarCore.setColor(backgroundColor, messageTextColor, actionTextColor, progressBarColor, progressTextColor)
             snackProgressBarCore.setTextSize(textSize)
             snackProgressBarCore.setMaxLines(maxLines)
             val finalDuration = duration
@@ -566,7 +585,7 @@ class SnackProgressBarManager(view: View) {
             }
         } while (view != null)
         // use fallback since CoordinatorLayout and other alternative not found
-        fallback?.run { return this } ?:
-                throw IllegalArgumentException("No suitable parent found from the given view. " + "Please provide a valid view.")
+        fallback?.run { return this }
+                ?: throw IllegalArgumentException("No suitable parent found from the given view. " + "Please provide a valid view.")
     }
 }

@@ -99,9 +99,11 @@ internal class SnackProgressBarLayout @JvmOverloads constructor(
      * @param messageTextColor R.color id.
      * @param actionTextColor  R.color id.
      * @param progressBarColor R.color id.
+     * @param progressTextColor R.color id.
      */
     internal fun setColor(@ColorRes backgroundColor: Int, @ColorRes messageTextColor: Int,
-                          @ColorRes actionTextColor: Int, @ColorRes progressBarColor: Int) {
+                          @ColorRes actionTextColor: Int, @ColorRes progressBarColor: Int,
+                          @ColorRes progressTextColor: Int) {
         backgroundLayout.setBackgroundColor(ContextCompat.getColor(context, backgroundColor))
         messageText.setTextColor(ContextCompat.getColor(context, messageTextColor))
         actionText.setTextColor(ContextCompat.getColor(context, actionTextColor))
@@ -110,6 +112,7 @@ internal class SnackProgressBarLayout @JvmOverloads constructor(
                 ContextCompat.getColor(context, progressBarColor), android.graphics.PorterDuff.Mode.SRC_IN)
         indeterminateProgressBar.indeterminateDrawable.setColorFilter(
                 ContextCompat.getColor(context, progressBarColor), android.graphics.PorterDuff.Mode.SRC_IN)
+        progressText.setTextColor(ContextCompat.getColor(context, progressTextColor))
     }
 
     /**
