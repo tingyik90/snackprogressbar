@@ -80,10 +80,10 @@ class SnackProgressBarManager(view: View) {
         @JvmField
         val PROGRESSBAR_COLOR_DEFAULT = R.color.colorAccent
         /**
-         * Default progressText color i.e. android.R.color.white.
+         * Default progressText color as per Material Design.
          */
         @JvmField
-        val PROGRESSTEXT_COLOR_DEFAULT = android.R.color.white
+        val PROGRESSTEXT_COLOR_DEFAULT = R.color.textWhitePrimary
         /**
          * Default overlayLayout color i.e. android.R.color.white.
          */
