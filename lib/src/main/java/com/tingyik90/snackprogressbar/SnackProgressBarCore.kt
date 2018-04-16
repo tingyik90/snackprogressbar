@@ -17,16 +17,16 @@ import android.view.ViewGroup
 internal class SnackProgressBarCore private constructor(
         parent: ViewGroup,
         content: View,
-        contentViewCallback: ContentViewCallback
-) : BaseTransientBottomBar<SnackProgressBarCore>(parent, content, contentViewCallback) {
+        contentViewCallback: ContentViewCallback)
+    : BaseTransientBottomBar<SnackProgressBarCore>(parent, content, contentViewCallback) {
 
     /* variables */
-    private val shortDurationMillis = 1500L          // as per SnackbarManager
-    private val longDurationMillis = 2750L           // as per SnackbarManager
+    private val shortDurationMillis = 1500          // as per SnackbarManager
+    private val longDurationMillis = 2750           // as per SnackbarManager
     private val handler = Handler()
     private val runnable = Runnable { dismiss() }
 
-    private var showDuration = 0L
+    private var showDuration = 0
     private var useDefaultHandler = true
     private lateinit var snackProgressBar: SnackProgressBar
     private lateinit var parentView: ViewGroup
@@ -43,7 +43,7 @@ internal class SnackProgressBarCore private constructor(
          * @param viewsToMove      View to be animated along with the SnackProgressBar.
          */
         internal fun make(parentView: ViewGroup, snackProgressBar: SnackProgressBar,
-                          showDuration: Long, viewsToMove: Array<View>?): SnackProgressBarCore {
+                          showDuration: Int, viewsToMove: Array<View>?): SnackProgressBarCore {
             // get inflater from parent
             val inflater = LayoutInflater.from(parentView.context)
             // add overlayLayout as background
@@ -152,7 +152,7 @@ internal class SnackProgressBarCore private constructor(
         showOverlayLayout()
         // use default SnackManager if it is CoordinatorLayout
         if (useDefaultHandler) {
-            duration = showDuration.toInt()
+            duration = showDuration
         }
         // else, set up own handler for dismiss countdown
         else {
@@ -165,7 +165,7 @@ internal class SnackProgressBarCore private constructor(
                     SnackProgressBarManager.LENGTH_SHORT -> showDuration = shortDurationMillis
                     SnackProgressBarManager.LENGTH_LONG -> showDuration = longDurationMillis
                 }
-                handler.postDelayed(runnable, showDuration)
+                handler.postDelayed(runnable, showDuration.toLong())
             }
         }
         super.show()
@@ -318,7 +318,7 @@ internal class SnackProgressBarCore private constructor(
                     SnackProgressBarLayout.SWIPE_IN ->
                         // once the SnackProgressBar is swiped in, resume dismiss countdown
                         if (showDuration != SnackProgressBarManager.LENGTH_INDEFINITE) {
-                            handler.postDelayed(runnable, showDuration)
+                            handler.postDelayed(runnable, showDuration.toLong())
                         }
                 }
             }

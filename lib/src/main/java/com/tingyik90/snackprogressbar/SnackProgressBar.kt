@@ -19,7 +19,7 @@ import com.tingyik90.snackprogressbar.SnackProgressBar.Companion.TYPE_MESSAGE
  * @property message Message of SnackProgressBar.
  */
 @Keep
-class SnackProgressBar(@Type private var type: Long, private var message: String) {
+class SnackProgressBar(@Type private var type: Int, private var message: String) {
 
     @Retention(AnnotationRetention.SOURCE)
     @IntDef(TYPE_ACTION, TYPE_DETERMINATE, TYPE_INDETERMINATE, TYPE_MESSAGE)
@@ -29,19 +29,19 @@ class SnackProgressBar(@Type private var type: Long, private var message: String
         /**
          * SnackProgressBar layout with message and action button.
          */
-        const val TYPE_ACTION = 100L
+        const val TYPE_ACTION = 100
         /**
          * SnackProgressBar layout with message, determinate progressBar and progress percentage.
          */
-        const val TYPE_DETERMINATE = 200L
+        const val TYPE_DETERMINATE = 200
         /**
          * SnackProgressBar layout with message and indeterminate progressBar.
          */
-        const val TYPE_INDETERMINATE = 300L
+        const val TYPE_INDETERMINATE = 300
         /**
          * SnackProgressBar layout with message only.
          */
-        const val TYPE_MESSAGE = 400L
+        const val TYPE_MESSAGE = 400
 
         internal const val DEFAULT_ICON_RES_ID = -1
     }
@@ -69,7 +69,7 @@ class SnackProgressBar(@Type private var type: Long, private var message: String
     /**
      * Internal constructor for duplicating SnackProgressBar.
      */
-    internal constructor (type: Long,
+    internal constructor (type: Int,
                           message: String,
                           action: String,
                           iconBitmap: Bitmap?,
@@ -95,11 +95,11 @@ class SnackProgressBar(@Type private var type: Long, private var message: String
      * @param type SnackProgressBar of either
      * [TYPE_ACTION], [TYPE_DETERMINATE], [TYPE_INDETERMINATE] or [TYPE_MESSAGE]
      */
-    fun setType(type: Long) {
+    fun setType(type: Int) {
         this.type = type
     }
 
-    internal fun getType(): Long {
+    internal fun getType(): Int {
         return type
     }
 

@@ -49,15 +49,15 @@ class SnackProgressBarManager(view: View) {
          * Note that this will be changed to LENGTH_SHORT and dismissed
          * if there is another SnackProgressBar in queue before and after.
          */
-        const val LENGTH_INDEFINITE = BaseTransientBottomBar.LENGTH_INDEFINITE.toLong()
+        const val LENGTH_INDEFINITE = BaseTransientBottomBar.LENGTH_INDEFINITE
         /**
          * Show the SnackProgressBar for a short period of time.
          */
-        const val LENGTH_SHORT = BaseTransientBottomBar.LENGTH_SHORT.toLong()
+        const val LENGTH_SHORT = BaseTransientBottomBar.LENGTH_SHORT
         /**
          * Show the SnackProgressBar for a long period of time.
          */
-        const val LENGTH_LONG = BaseTransientBottomBar.LENGTH_LONG.toLong()
+        const val LENGTH_LONG = BaseTransientBottomBar.LENGTH_LONG
 
         /**
          * Default SnackProgressBar background color as per Material Design.
@@ -96,7 +96,7 @@ class SnackProgressBarManager(view: View) {
     private val storedBars = HashMap<Int, SnackProgressBar>()
     private val queueBars = ArrayList<SnackProgressBar>()
     private val queueOnDisplayIds = ArrayList<Int>()
-    private val queueDurations = ArrayList<Long>()
+    private val queueDurations = ArrayList<Int>()
 
     private var currentQueue = 0
     private var currentBar: SnackProgressBar? = null
@@ -155,7 +155,7 @@ class SnackProgressBarManager(view: View) {
      * @see .getSnackProgressBar
      */
     fun put(snackProgressBar: SnackProgressBar, @OneUp storeId: Int) {
-        storedBars.put(storeId, snackProgressBar)
+        storedBars[storeId] = snackProgressBar
     }
 
     /**
@@ -189,7 +189,7 @@ class SnackProgressBarManager(view: View) {
      * or any positive millis.
      * @see .put
      */
-    fun show(@OneUp storeId: Int, @ShowDuration duration: Long) {
+    fun show(@OneUp storeId: Int, @ShowDuration duration: Int) {
         val snackProgressBar = storedBars[storeId]
         snackProgressBar?.run { addToQueue(this, duration, onDisplayIdDefault) }
                 ?: throw IllegalArgumentException("SnackProgressBar with storeId = $storeId is not found!")
@@ -207,7 +207,7 @@ class SnackProgressBarManager(view: View) {
      * @param onDisplayId OnDisplayId attached to the SnackProgressBar when implementing the OnDisplayListener.
      * @see .put
      */
-    fun show(@OneUp storeId: Int, @ShowDuration duration: Long, @OneUp onDisplayId: Int) {
+    fun show(@OneUp storeId: Int, @ShowDuration duration: Int, @OneUp onDisplayId: Int) {
         val snackProgressBar = storedBars[storeId]
         snackProgressBar?.run { show(this, duration, onDisplayId) }
                 ?: throw IllegalArgumentException("SnackProgressBar with storeId = $storeId is not found!")
@@ -223,7 +223,7 @@ class SnackProgressBarManager(view: View) {
      * [LENGTH_SHORT], [LENGTH_LONG], [LENGTH_INDEFINITE]
      * or any positive millis.
      */
-    fun show(snackProgressBar: SnackProgressBar, @ShowDuration duration: Long) {
+    fun show(snackProgressBar: SnackProgressBar, @ShowDuration duration: Int) {
         addToQueue(snackProgressBar, duration, onDisplayIdDefault)
     }
 
@@ -238,7 +238,7 @@ class SnackProgressBarManager(view: View) {
      * or any positive millis.
      * @param onDisplayId      OnDisplayId attached to the SnackProgressBar when implementing the OnDisplayListener.
      */
-    fun show(snackProgressBar: SnackProgressBar, @ShowDuration duration: Long, @OneUp onDisplayId: Int) {
+    fun show(snackProgressBar: SnackProgressBar, @ShowDuration duration: Int, @OneUp onDisplayId: Int) {
         addToQueue(snackProgressBar, duration, onDisplayId)
     }
 
@@ -446,7 +446,7 @@ class SnackProgressBarManager(view: View) {
      * or any positive millis.
      * @param onDisplayId      OnDisplayId attached to the SnackProgressBar when implementing the OnDisplayListener.
      */
-    private fun addToQueue(snackProgressBar: SnackProgressBar, duration: Long, onDisplayId: Int) {
+    private fun addToQueue(snackProgressBar: SnackProgressBar, duration: Int, onDisplayId: Int) {
         // get the queue number as the last of queue list
         val queue = queueBars.size
         // create a new object
