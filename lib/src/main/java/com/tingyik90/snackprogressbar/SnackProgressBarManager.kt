@@ -459,7 +459,8 @@ class SnackProgressBarManager(view: View) {
                 snackProgressBar.isAllowUserInput(),
                 snackProgressBar.isSwipeToDismiss(),
                 snackProgressBar.isShowProgressPercentage(),
-                snackProgressBar.getOnActionClickListener())
+                snackProgressBar.getOnActionClickListener(),
+                snackProgressBar.getBundle())
         // put in queue
         queueBars.add(queueBar)
         queueOnDisplayIds.add(onDisplayId)

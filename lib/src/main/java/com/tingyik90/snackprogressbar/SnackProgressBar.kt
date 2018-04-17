@@ -1,6 +1,7 @@
 package com.tingyik90.snackprogressbar
 
 import android.graphics.Bitmap
+import android.os.Bundle
 import android.support.annotation.DrawableRes
 import android.support.annotation.IntDef
 import android.support.annotation.IntRange
@@ -65,6 +66,7 @@ class SnackProgressBar(@Type private var type: Int, private var message: String)
     private var swipeToDismiss: Boolean = false
     private var showProgressPercentage: Boolean = true
     private var onActionClickListener: OnActionClickListener? = null
+    private var bundle: Bundle? = null
 
     /**
      * Internal constructor for duplicating SnackProgressBar.
@@ -78,7 +80,8 @@ class SnackProgressBar(@Type private var type: Int, private var message: String)
                           allowUserInput: Boolean,
                           swipeToDismiss: Boolean,
                           showProgressPercentage: Boolean,
-                          onActionClickListener: OnActionClickListener?) : this(type, message) {
+                          onActionClickListener: OnActionClickListener?,
+                          bundle: Bundle?) : this(type, message) {
         this.action = action
         this.iconBitmap = iconBitmap
         this.iconResId = iconResId
@@ -87,6 +90,7 @@ class SnackProgressBar(@Type private var type: Int, private var message: String)
         this.swipeToDismiss = swipeToDismiss
         this.showProgressPercentage = showProgressPercentage
         this.onActionClickListener = onActionClickListener
+        this.bundle = bundle
     }
 
     /**
@@ -231,6 +235,24 @@ class SnackProgressBar(@Type private var type: Int, private var message: String)
 
     internal fun isShowProgressPercentage(): Boolean {
         return showProgressPercentage
+    }
+
+    /**
+     * Sets the additional bundle of SnackProgressBar.
+     *
+     * @param bundle Bundle of SnackProgressBar.
+     */
+    fun setBundle(bundle: Bundle): SnackProgressBar {
+        this.bundle = bundle
+        return this
+    }
+
+    /**
+     * Gets the additional bundle of SnackProgressBar. This value may be null.
+     *
+     */
+    fun getBundle(): Bundle? {
+        return bundle
     }
 
     override fun toString(): String {
