@@ -12,12 +12,15 @@ Enhanced Snackbar for Android.
 6. Provides OverlayLayout to prevent user input.
 7. Provides a queue system.
 8. Icon can be added.
+9. Supports bundle in SnackProgressBar to carry information.
+10. Supports changing element color and text size.
 
-![Image of SnackProgressBar](https://i.imgur.com/9C3A4UZm.png)
+![Image of SnackProgressBar](https://i.imgur.com/9C3A4UZl.png)
 
 Watch the demo video at https://youtu.be/dbawFbr6iPk.
 
 ## Getting Started
+NOTE: v4.0 is a huge leap from v3.4 and offers much better flexibility. Please take note when migrating.
 
 ### SnackProgressBarManager
 Start by creating an instance of SnackProgressBarManager in your activity.
