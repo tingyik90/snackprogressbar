@@ -6,43 +6,38 @@ import android.support.annotation.DrawableRes
 import android.support.annotation.IntDef
 import android.support.annotation.IntRange
 import android.support.annotation.Keep
-import com.tingyik90.snackprogressbar.SnackProgressBar.Companion.TYPE_ACTION
-import com.tingyik90.snackprogressbar.SnackProgressBar.Companion.TYPE_DETERMINATE
-import com.tingyik90.snackprogressbar.SnackProgressBar.Companion.TYPE_INDETERMINATE
-import com.tingyik90.snackprogressbar.SnackProgressBar.Companion.TYPE_MESSAGE
+import com.tingyik90.snackprogressbar.SnackProgressBar.Companion.TYPE_CIRCULAR
+import com.tingyik90.snackprogressbar.SnackProgressBar.Companion.TYPE_HORIZONTAL
+import com.tingyik90.snackprogressbar.SnackProgressBar.Companion.TYPE_NORMAL
 
 /**
  * Main class containing the display information of SnackProgressBar to be displayed
  * via SnackProgressBarManager.
  *
  * @property type SnackProgressBar of either
- *  [TYPE_ACTION], [TYPE_DETERMINATE], [TYPE_INDETERMINATE] or [TYPE_MESSAGE]
+ *  [TYPE_NORMAL], [TYPE_HORIZONTAL] or [TYPE_CIRCULAR]
  * @property message Message of SnackProgressBar.
  */
 @Keep
 class SnackProgressBar(@Type private var type: Int, private var message: String) {
 
     @Retention(AnnotationRetention.SOURCE)
-    @IntDef(TYPE_ACTION, TYPE_DETERMINATE, TYPE_INDETERMINATE, TYPE_MESSAGE)
+    @IntDef(TYPE_NORMAL, TYPE_HORIZONTAL, TYPE_CIRCULAR)
     annotation class Type
 
     companion object {
         /**
-         * SnackProgressBar layout with message and action button.
-         */
-        const val TYPE_ACTION = 100
-        /**
-         * SnackProgressBar layout with message, determinate progressBar and progress percentage.
-         */
-        const val TYPE_DETERMINATE = 200
-        /**
-         * SnackProgressBar layout with message and indeterminate progressBar.
-         */
-        const val TYPE_INDETERMINATE = 300
-        /**
          * SnackProgressBar layout with message only.
          */
-        const val TYPE_MESSAGE = 400
+        const val TYPE_NORMAL = 100
+        /**
+         * SnackProgressBar layout with message and horizontal progressBar.
+         */
+        const val TYPE_HORIZONTAL = 200
+        /**
+         * SnackProgressBar layout with message and circular progressBar.
+         */
+        const val TYPE_CIRCULAR = 300
 
         internal const val DEFAULT_ICON_RES_ID = -1
     }
@@ -59,13 +54,14 @@ class SnackProgressBar(@Type private var type: Int, private var message: String)
 
     /* variables */
     private var action: String = ""
+    private var onActionClickListener: OnActionClickListener? = null
     private var iconBitmap: Bitmap? = null
     private var iconResId: Int = DEFAULT_ICON_RES_ID
     private var progressMax: Int = 100
     private var allowUserInput: Boolean = false
     private var swipeToDismiss: Boolean = false
-    private var showProgressPercentage: Boolean = true
-    private var onActionClickListener: OnActionClickListener? = null
+    private var isIndeterminate: Boolean = false
+    private var showProgressPercentage: Boolean = false
     private var bundle: Bundle? = null
 
     /**
@@ -74,22 +70,24 @@ class SnackProgressBar(@Type private var type: Int, private var message: String)
     internal constructor (type: Int,
                           message: String,
                           action: String,
+                          onActionClickListener: OnActionClickListener?,
                           iconBitmap: Bitmap?,
                           iconResId: Int,
                           progressMax: Int,
                           allowUserInput: Boolean,
                           swipeToDismiss: Boolean,
+                          isIndeterminate: Boolean,
                           showProgressPercentage: Boolean,
-                          onActionClickListener: OnActionClickListener?,
                           bundle: Bundle?) : this(type, message) {
         this.action = action
+        this.onActionClickListener = onActionClickListener
         this.iconBitmap = iconBitmap
         this.iconResId = iconResId
         this.progressMax = progressMax
         this.allowUserInput = allowUserInput
         this.swipeToDismiss = swipeToDismiss
+        this.isIndeterminate = isIndeterminate
         this.showProgressPercentage = showProgressPercentage
-        this.onActionClickListener = onActionClickListener
         this.bundle = bundle
     }
 
@@ -97,7 +95,7 @@ class SnackProgressBar(@Type private var type: Int, private var message: String)
      * Sets the type of SnackProgressBar.
      *
      * @param type SnackProgressBar of either
-     * [TYPE_ACTION], [TYPE_DETERMINATE], [TYPE_INDETERMINATE] or [TYPE_MESSAGE]
+     * [TYPE_NORMAL], [TYPE_HORIZONTAL] or [TYPE_CIRCULAR]
      */
     fun setType(type: Int) {
         this.type = type
@@ -122,15 +120,13 @@ class SnackProgressBar(@Type private var type: Int, private var message: String)
     }
 
     /**
-     * Sets the action of SnackProgressBar. Only will be shown for TYPE_ACTION.
+     * Sets the action of SnackProgressBar.
      *
      * @param action Action to be displayed.
      */
     fun setAction(action: String, onActionClickListener: OnActionClickListener?): SnackProgressBar {
-        if (type == TYPE_ACTION) {
-            this.action = action
-            this.onActionClickListener = onActionClickListener
-        }
+        this.action = action
+        this.onActionClickListener = onActionClickListener
         return this
     }
 
@@ -173,14 +169,12 @@ class SnackProgressBar(@Type private var type: Int, private var message: String)
     }
 
     /**
-     * Sets the max progress for determinate ProgressBar. Only will be shown for TYPE_DETERMINATE.
+     * Sets the max progress for determinate ProgressBar.
      *
      * @param progressMax Max progress for determinate ProgressBar. Default = 100.
      */
     fun setProgressMax(@IntRange(from = 1) progressMax: Int): SnackProgressBar {
-        if (type == TYPE_DETERMINATE) {
-            this.progressMax = progressMax
-        }
+        this.progressMax = progressMax
         return this
     }
 
@@ -204,16 +198,11 @@ class SnackProgressBar(@Type private var type: Int, private var message: String)
 
     /**
      * Sets whether user can swipe to dismiss.
-     * Swipe to dismiss only works for TYPE_ACTION and TYPE_MESSAGE.
      *
      * @param swipeToDismiss Whether user can swipe to dismiss. Default = FALSE.
      */
     fun setSwipeToDismiss(swipeToDismiss: Boolean): SnackProgressBar {
         this.swipeToDismiss = swipeToDismiss
-        when (type) {
-        // don't allow swipe to dismiss
-            SnackProgressBar.TYPE_DETERMINATE, SnackProgressBar.TYPE_INDETERMINATE -> this.swipeToDismiss = false
-        }
         return this
     }
 
@@ -222,14 +211,26 @@ class SnackProgressBar(@Type private var type: Int, private var message: String)
     }
 
     /**
-     * Sets whether to show progress in percentage. Only will be shown for TYPE_DETERMINATE.
+     * Sets whether the progressBar is indeterminate.
      *
-     * @param showProgressPercentage Whether to show progressText. Default = TRUE.
+     * @param isIndeterminate Whether the progressBar is indeterminate. Default = FALSE.
+     */
+    fun setIsIndeterminate(isIndeterminate: Boolean): SnackProgressBar {
+        this.isIndeterminate = isIndeterminate
+        return this
+    }
+
+    internal fun isIndeterminate(): Boolean {
+        return isIndeterminate
+    }
+
+    /**
+     * Sets whether to show progress in percentage.
+     *
+     * @param showProgressPercentage Whether to show progressText. Default = FALSE.
      */
     fun setShowProgressPercentage(showProgressPercentage: Boolean): SnackProgressBar {
-        if (type == TYPE_DETERMINATE) {
-            this.showProgressPercentage = showProgressPercentage
-        }
+        this.showProgressPercentage = showProgressPercentage
         return this
     }
 
@@ -242,36 +243,34 @@ class SnackProgressBar(@Type private var type: Int, private var message: String)
      *
      * @param bundle Bundle of SnackProgressBar.
      */
-    fun setBundle(bundle: Bundle): SnackProgressBar {
+    fun putBundle(bundle: Bundle): SnackProgressBar {
         this.bundle = bundle
         return this
     }
 
     /**
      * Gets the additional bundle of SnackProgressBar. This value may be null.
-     *
      */
     fun getBundle(): Bundle? {
         return bundle
     }
 
+    // toString
     override fun toString(): String {
-        val stringBuilder = StringBuilder("SnackProgressBar{")
-                .append("type=").append(type)
-                .append(", message='").append(message).append("\'")
-        if (iconBitmap != null) {
-            stringBuilder.append(", iconBitmap=").append(iconBitmap.toString())
+        val typeString = when (type) {
+            TYPE_CIRCULAR -> "TYPE_CIRCULAR"
+            TYPE_HORIZONTAL -> "TYPE_HORIZONTAL"
+            else -> "TYPE_NORMAL"
         }
-        if (iconResId != DEFAULT_ICON_RES_ID) {
-            stringBuilder.append(", iconResId=").append(iconResId)
-        }
-        if (type == TYPE_DETERMINATE) {
-            stringBuilder.append(", progressMax=").append(progressMax)
-            stringBuilder.append(", showProgressPercentage=").append(showProgressPercentage)
-        }
-        stringBuilder.append(", allowUserInput=").append(allowUserInput)
-                .append(", swipeToDismiss=").append(swipeToDismiss)
-                .append("}")
-        return stringBuilder.toString()
+        val hasIcon = iconBitmap != null && iconResId != DEFAULT_ICON_RES_ID
+        return "SnackProgressBar(type='$typeString', " +
+                "message='$message', " +
+                "action='$action', " +
+                "hasIcon=$hasIcon, " +
+                "progressMax=$progressMax, " +
+                "allowUserInput=$allowUserInput, " +
+                "swipeToDismiss=$swipeToDismiss, " +
+                "isIndeterminate=$isIndeterminate, " +
+                "showProgressPercentage=$showProgressPercentage)"
     }
 }

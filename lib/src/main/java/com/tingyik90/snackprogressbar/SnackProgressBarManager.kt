@@ -99,7 +99,6 @@ class SnackProgressBarManager(view: View) {
     private val queueDurations = ArrayList<Int>()
 
     private var currentQueue = 0
-    private var currentBar: SnackProgressBar? = null
     private var currentCore: SnackProgressBarCore? = null
     private var parentView: ViewGroup = findSuitableParent(view)
     private var viewsToMove: Array<View>? = null
@@ -123,14 +122,14 @@ class SnackProgressBarManager(view: View) {
          *
          * @param onDisplayId OnDisplayId assigned to the SnackProgressBar which is shown.
          */
-        fun onShown(onDisplayId: Int)
+        fun onShown(snackProgressBar: SnackProgressBar, onDisplayId: Int)
 
         /**
          * Called when the SnackProgressBar is dismissed.
          *
          * @param onDisplayId OnDisplayId assigned to the SnackProgressBar which is shown.
          */
-        fun onDismissed(onDisplayId: Int)
+        fun onDismissed(snackProgressBar: SnackProgressBar, onDisplayId: Int)
     }
 
     /**
@@ -175,7 +174,7 @@ class SnackProgressBarManager(view: View) {
      * @return SnackProgressBar that is currently or was showing. Return null if nothing was ever shown.
      */
     fun getLastShown(): SnackProgressBar? {
-        return currentBar
+        return currentCore?.getSnackProgressBar()
     }
 
     /**
@@ -427,7 +426,7 @@ class SnackProgressBarManager(view: View) {
     }
 
     /**
-     * Sets the progress for SnackProgressBar of TYPE_DETERMINATE that is currently showing.
+     * Sets the progress for SnackProgressBar that is currently showing.
      * It will also update the progress in % if it is shown.
      *
      * @param progress Progress of the ProgressBar.
@@ -453,13 +452,14 @@ class SnackProgressBarManager(view: View) {
         val queueBar = SnackProgressBar(snackProgressBar.getType(),
                 snackProgressBar.getMessage(),
                 snackProgressBar.getAction(),
+                snackProgressBar.getOnActionClickListener(),
                 snackProgressBar.getIconBitmap(),
                 snackProgressBar.getIconResource(),
                 snackProgressBar.getProgressMax(),
                 snackProgressBar.isAllowUserInput(),
                 snackProgressBar.isSwipeToDismiss(),
+                snackProgressBar.isIndeterminate(),
                 snackProgressBar.isShowProgressPercentage(),
-                snackProgressBar.getOnActionClickListener(),
                 snackProgressBar.getBundle())
         // put in queue
         queueBars.add(queueBar)
@@ -491,43 +491,41 @@ class SnackProgressBarManager(view: View) {
                 }
             }
             // create SnackProgressBarCore
-            val snackProgressBarCore = SnackProgressBarCore.make(
-                    parentView, snackProgressBar, duration, viewsToMove)
-            snackProgressBarCore.setOverlayLayout(overlayColor, overlayLayoutAlpha)
-            snackProgressBarCore.setColor(backgroundColor, messageTextColor, actionTextColor, progressBarColor, progressTextColor)
-            snackProgressBarCore.setTextSize(textSize)
-            snackProgressBarCore.setMaxLines(maxLines)
             val finalDuration = duration
-            snackProgressBarCore.addCallback(object : BaseTransientBottomBar.BaseCallback<SnackProgressBarCore>() {
-                override fun onShown(snackProgressBarCore: SnackProgressBarCore?) {
-                    // set current
-                    currentBar = snackProgressBar
-                    currentCore = snackProgressBarCore
-                    // callback onDisplayListener
-                    onDisplayListener?.run {
-                        if (onDisplayId != onDisplayIdDefault) {
-                            this.onShown(onDisplayId)
+            val snackProgressBarCore = SnackProgressBarCore.make(parentView, snackProgressBar, duration, viewsToMove)
+                    .setOverlayLayout(overlayColor, overlayLayoutAlpha)
+                    .setColor(backgroundColor, messageTextColor, actionTextColor, progressBarColor, progressTextColor)
+                    .setTextSize(textSize)
+                    .setMaxLines(maxLines)
+                    .addCallback(object : BaseTransientBottomBar.BaseCallback<SnackProgressBarCore>() {
+                        override fun onShown(snackProgressBarCore: SnackProgressBarCore) {
+                            // set current
+                            currentCore = snackProgressBarCore
+                            // callback onDisplayListener
+                            onDisplayListener?.run {
+                                if (onDisplayId != onDisplayIdDefault) {
+                                    this.onShown(snackProgressBarCore.getSnackProgressBar(), onDisplayId)
+                                }
+                            }
                         }
-                    }
-                }
 
-                override fun onDismissed(snackProgressBarCore: SnackProgressBarCore?, event: Int) {
-                    // remove overlayLayout
-                    snackProgressBarCore?.removeOverlayLayout()
-                    // reset current
-                    currentCore = null
-                    // callback onDisplayListener
-                    onDisplayListener?.run {
-                        if (onDisplayId != onDisplayIdDefault) {
-                            this.onDismissed(onDisplayId)
+                        override fun onDismissed(snackProgressBarCore: SnackProgressBarCore, event: Int) {
+                            // remove overlayLayout
+                            snackProgressBarCore.removeOverlayLayout()
+                            // reset current
+                            currentCore = null
+                            // callback onDisplayListener
+                            onDisplayListener?.run {
+                                if (onDisplayId != onDisplayIdDefault) {
+                                    this.onDismissed(snackProgressBarCore.getSnackProgressBar(), onDisplayId)
+                                }
+                            }
+                            // play next if this item is dismissed automatically later
+                            if (finalDuration != LENGTH_INDEFINITE) {
+                                nextQueue()
+                            }
                         }
-                    }
-                    // play next if this item is dismissed automatically later
-                    if (finalDuration != LENGTH_INDEFINITE) {
-                        nextQueue()
-                    }
-                }
-            })
+                    })
             // reset queue if this is last item in queue with LENGTH_INDEFINITE
             if (duration == LENGTH_INDEFINITE) {
                 resetQueue()

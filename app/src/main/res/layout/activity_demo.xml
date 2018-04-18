@@ -15,39 +15,46 @@
         android:orientation="vertical">
 
         <Button
-            android:id="@+id/actionBtn"
+            android:id="@+id/normalBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="actionBtnClick"
-            android:text="Action" />
+            android:onClick="normalBtnClick"
+            android:text="Normal" />
 
         <Button
-            android:id="@+id/actionLongBtn"
+            android:id="@+id/normalWithActionBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="actionLongBtnClick"
-            android:text="Action Long" />
+            android:onClick="normalWithActionBtnClick"
+            android:text="Normal With Action" />
 
         <Button
-            android:id="@+id/determinateBtn"
+            android:id="@+id/horizontalBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="determinateBtnClick"
-            android:text="Determinate" />
+            android:onClick="horizontalBtnClick"
+            android:text="Horizontal" />
 
         <Button
-            android:id="@+id/indeterminateBtn"
+            android:id="@+id/horizontalWithActionBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="indeterminateBtnClick"
-            android:text="Indeterminate" />
+            android:onClick="horizontalWithActionBtnClick"
+            android:text="Horizontal With Action" />
 
         <Button
-            android:id="@+id/messageBtn"
+            android:id="@+id/circularBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="messageBtnClick"
-            android:text="Message" />
+            android:onClick="circularBtnClick"
+            android:text="Circular" />
+
+        <Button
+            android:id="@+id/circularWithActionBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="circularWithActionBtnClick"
+            android:text="Circular With Action" />
 
         <Button
             android:id="@+id/clearBtn"

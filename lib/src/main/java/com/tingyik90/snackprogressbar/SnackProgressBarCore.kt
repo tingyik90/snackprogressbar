@@ -9,16 +9,21 @@ import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.tingyik90.snackprogressbar.SnackProgressBar.Companion.TYPE_CIRCULAR
+import com.tingyik90.snackprogressbar.SnackProgressBar.Companion.TYPE_HORIZONTAL
+import com.tingyik90.snackprogressbar.SnackProgressBar.Companion.TYPE_NORMAL
 
 /**
  * Core class constructing the SnackProgressBar.
  */
 @Keep
 internal class SnackProgressBarCore private constructor(
-        parent: ViewGroup,
-        content: View,
-        contentViewCallback: ContentViewCallback)
-    : BaseTransientBottomBar<SnackProgressBarCore>(parent, content, contentViewCallback) {
+        private val parentView: ViewGroup,
+        private val snackProgressBarLayout: SnackProgressBarLayout,
+        private val overlayLayout: View,
+        private var showDuration: Int,
+        private var snackProgressBar: SnackProgressBar)
+    : BaseTransientBottomBar<SnackProgressBarCore>(parentView, snackProgressBarLayout, snackProgressBarLayout) {
 
     /* variables */
     private val shortDurationMillis = 1500          // as per SnackbarManager
@@ -26,18 +31,11 @@ internal class SnackProgressBarCore private constructor(
     private val handler = Handler()
     private val runnable = Runnable { dismiss() }
 
-    private var showDuration = 0
-    private var useDefaultHandler = true
-    private lateinit var snackProgressBar: SnackProgressBar
-    private lateinit var parentView: ViewGroup
-    private lateinit var overlayLayout: View
-    private lateinit var snackProgressBarLayout: SnackProgressBarLayout
-
     companion object {
         /**
          * Prepares SnackProgressBarCore.
          *
-         * @param parentView       View to hold the SnackProgressBar.
+         * @param parentView       View to hold the SnackProgressBar, prepared by SnackProgressBarManager
          * @param snackProgressBar SnackProgressBar to be shown.
          * @param showDuration     Duration to show the SnackProgressBar.
          * @param viewsToMove      View to be animated along with the SnackProgressBar.
@@ -55,16 +53,21 @@ internal class SnackProgressBarCore private constructor(
             snackProgressBarLayout.setViewsToMove(viewsToMove)
             // create SnackProgressBarCore
             val snackProgressBarCore = SnackProgressBarCore(
-                    parentView, snackProgressBarLayout, snackProgressBarLayout)
-            snackProgressBarCore.snackProgressBar = snackProgressBar
-            snackProgressBarCore.parentView = parentView
-            snackProgressBarCore.overlayLayout = overlayLayout
-            snackProgressBarCore.snackProgressBarLayout = snackProgressBarLayout
-            snackProgressBarCore.useDefaultHandler = parentView is CoordinatorLayout
-            snackProgressBarCore.showDuration = showDuration
+                    parentView,
+                    snackProgressBarLayout,
+                    overlayLayout,
+                    showDuration,
+                    snackProgressBar)
             snackProgressBarCore.updateTo(snackProgressBar)
             return snackProgressBarCore
         }
+    }
+
+    /**
+     * Gets the attached snackProgressBar.
+     */
+    internal fun getSnackProgressBar(): SnackProgressBar {
+        return snackProgressBar
     }
 
     /**
@@ -139,19 +142,32 @@ internal class SnackProgressBarCore private constructor(
      * @param progress Progress of the ProgressBar.
      */
     internal fun setProgress(@IntRange(from = 0) progress: Int): SnackProgressBarCore {
-        val determinateProgressBar = snackProgressBarLayout.determinateProgressBar
-        determinateProgressBar.progress = progress
-        val progress100 = (progress.toFloat() / determinateProgressBar.max * 100).toInt()
-        val progressString = progress100.toString() + "%"
-        snackProgressBarLayout.progressText.text = progressString
+        val progressBar =
+                when (snackProgressBar.getType()) {
+                    TYPE_HORIZONTAL -> snackProgressBarLayout.horizontalProgressBar
+                    TYPE_CIRCULAR -> snackProgressBarLayout.circularDeterminateProgressBar
+                    else -> null
+                }
+        if (progressBar != null) {
+            progressBar.progress = progress
+            val progress100 = (progress.toFloat() / progressBar.max * 100).toInt()
+            var progressString = progress100.toString()
+            snackProgressBarLayout.progressTextCircular.text = progressString
+            // include % for progressText
+            progressString += "%"
+            snackProgressBarLayout.progressText.text = progressString
+        }
         return this
     }
 
+    /**
+     * Show the SnackProgressBar
+     */
     override fun show() {
         // show overLayLayout
         showOverlayLayout()
         // use default SnackManager if it is CoordinatorLayout
-        if (useDefaultHandler) {
+        if (parentView is CoordinatorLayout) {
             duration = showDuration
         }
         // else, set up own handler for dismiss countdown
@@ -160,10 +176,10 @@ internal class SnackProgressBarCore private constructor(
             // disable SnackManager by stopping countdown
             duration = BaseTransientBottomBar.LENGTH_INDEFINITE
             // assign the actual showDuration if dismiss is required
-            if (showDuration != SnackProgressBarManager.LENGTH_INDEFINITE) {
+            if (showDuration != LENGTH_INDEFINITE) {
                 when (showDuration) {
-                    SnackProgressBarManager.LENGTH_SHORT -> showDuration = shortDurationMillis
-                    SnackProgressBarManager.LENGTH_LONG -> showDuration = longDurationMillis
+                    LENGTH_SHORT -> showDuration = shortDurationMillis
+                    LENGTH_LONG -> showDuration = longDurationMillis
                 }
                 handler.postDelayed(runnable, showDuration.toLong())
             }
@@ -173,25 +189,31 @@ internal class SnackProgressBarCore private constructor(
 
     /**
      * Sets the layout based on SnackProgressBar type.
-     * Note: Layout for action is handled by [SnackProgressBarLayout]
+     * Note: Layout positioning for action is handled by [SnackProgressBarLayout]
      */
     private fun setType(): SnackProgressBarCore {
-        val determinateProgressBar = snackProgressBarLayout.determinateProgressBar
-        val indeterminateProgressBar = snackProgressBarLayout.indeterminateProgressBar
         // update view
-        val type = snackProgressBar.getType()
-        when (type) {
-            SnackProgressBar.TYPE_ACTION, SnackProgressBar.TYPE_MESSAGE -> {
-                determinateProgressBar.visibility = View.GONE
-                indeterminateProgressBar.visibility = View.GONE
+        when (snackProgressBar.getType()) {
+            TYPE_NORMAL -> {
+                snackProgressBarLayout.horizontalProgressBar.visibility = View.GONE
+                snackProgressBarLayout.circularDeterminateProgressBar.visibility = View.GONE
+                snackProgressBarLayout.circularIndeterminateProgressBar.visibility = View.GONE
             }
-            SnackProgressBar.TYPE_DETERMINATE -> {
-                determinateProgressBar.visibility = View.VISIBLE
-                indeterminateProgressBar.visibility = View.GONE
+            TYPE_HORIZONTAL -> {
+                snackProgressBarLayout.horizontalProgressBar.visibility = View.VISIBLE
+                snackProgressBarLayout.circularDeterminateProgressBar.visibility = View.GONE
+                snackProgressBarLayout.circularIndeterminateProgressBar.visibility = View.GONE
+                snackProgressBarLayout.horizontalProgressBar.isIndeterminate = snackProgressBar.isIndeterminate()
             }
-            SnackProgressBar.TYPE_INDETERMINATE -> {
-                determinateProgressBar.visibility = View.GONE
-                indeterminateProgressBar.visibility = View.VISIBLE
+            TYPE_CIRCULAR -> {
+                snackProgressBarLayout.horizontalProgressBar.visibility = View.GONE
+                if (snackProgressBar.isIndeterminate()) {
+                    snackProgressBarLayout.circularDeterminateProgressBar.visibility = View.GONE
+                    snackProgressBarLayout.circularIndeterminateProgressBar.visibility = View.VISIBLE
+                } else {
+                    snackProgressBarLayout.circularDeterminateProgressBar.visibility = View.VISIBLE
+                    snackProgressBarLayout.circularIndeterminateProgressBar.visibility = View.GONE
+                }
             }
         }
         return this
@@ -203,71 +225,69 @@ internal class SnackProgressBarCore private constructor(
     private fun setIcon(): SnackProgressBarCore {
         val iconBitmap = snackProgressBar.getIconBitmap()
         val iconResId = snackProgressBar.getIconResource()
-        val iconImage = snackProgressBarLayout.iconImage
         when {
             iconBitmap != null -> {
-                iconImage.setImageBitmap(iconBitmap)
-                iconImage.visibility = View.VISIBLE
+                snackProgressBarLayout.iconImage.setImageBitmap(iconBitmap)
+                snackProgressBarLayout.iconImage.visibility = View.VISIBLE
             }
             iconResId != SnackProgressBar.DEFAULT_ICON_RES_ID -> {
-                iconImage.setImageResource(iconResId)
-                iconImage.visibility = View.VISIBLE
+                snackProgressBarLayout.iconImage.setImageResource(iconResId)
+                snackProgressBarLayout.iconImage.visibility = View.VISIBLE
             }
-            else -> iconImage.visibility = View.GONE
+            else -> snackProgressBarLayout.iconImage.visibility = View.GONE
         }
         return this
     }
 
     /**
-     * Set the action to be displayed. Only will be shown for TYPE_ACTION.
+     * Sets the action to be displayed.
      */
     private fun setAction(): SnackProgressBarCore {
-        val type = snackProgressBar.getType()
         val action = snackProgressBar.getAction()
         val onActionClickListener = snackProgressBar.getOnActionClickListener()
-        if (type == SnackProgressBar.TYPE_ACTION) {
-            // set the text
-            val actionText = snackProgressBarLayout.actionText
-            val actionNextLineText = snackProgressBarLayout.actionNextLineText
-            actionText.text = action.toUpperCase()
-            actionNextLineText.text = action.toUpperCase()
-            // set the onClickListener
-            val onClickListener = View.OnClickListener {
-                onActionClickListener?.onActionClick()
-                dismiss()
-            }
-            actionText.setOnClickListener(onClickListener)
-            actionNextLineText.setOnClickListener(onClickListener)
+        // set the text
+        snackProgressBarLayout.actionText.text = action.toUpperCase()
+        snackProgressBarLayout.actionNextLineText.text = action.toUpperCase()
+        // set the onClickListener
+        val onClickListener = View.OnClickListener {
+            onActionClickListener?.onActionClick()
+            dismiss()
         }
+        snackProgressBarLayout.actionText.setOnClickListener(onClickListener)
+        snackProgressBarLayout.actionNextLineText.setOnClickListener(onClickListener)
         return this
     }
 
     /**
-     * Set whether to show progressText. Only will be shown for TYPE_DETERMINATE.
+     * Sets whether to show progressText.
      */
     private fun showProgressPercentage(): SnackProgressBarCore {
-        val type = snackProgressBar.getType()
-        val showProgressPercentage = snackProgressBar.isShowProgressPercentage()
-        val progressText = snackProgressBarLayout.progressText
-        if (showProgressPercentage && type == SnackProgressBar.TYPE_DETERMINATE) {
-            progressText.visibility = View.VISIBLE
+        if (snackProgressBar.isShowProgressPercentage()) {
+            if (snackProgressBar.getType() == TYPE_CIRCULAR) {
+                snackProgressBarLayout.progressText.visibility = View.GONE
+                snackProgressBarLayout.progressTextCircular.visibility = View.VISIBLE
+            } else {
+                snackProgressBarLayout.progressText.visibility = View.VISIBLE
+                snackProgressBarLayout.progressTextCircular.visibility = View.GONE
+            }
         } else {
-            progressText.visibility = View.GONE
+            snackProgressBarLayout.progressText.visibility = View.GONE
+            snackProgressBarLayout.progressTextCircular.visibility = View.GONE
         }
         return this
     }
 
     /**
-     * Set the max progress for progressBar.
+     * Sets the max progress for progressBar.
      */
     private fun setProgressMax(): SnackProgressBarCore {
-        snackProgressBarLayout.determinateProgressBar.max = snackProgressBar.getProgressMax()
+        snackProgressBarLayout.horizontalProgressBar.max = snackProgressBar.getProgressMax()
+        snackProgressBarLayout.circularDeterminateProgressBar.max = snackProgressBar.getProgressMax()
         return this
     }
 
     /**
-     * Set whether user can swipe to dismiss.
-     * This only works for TYPE_ACTION and TYPE_MESSAGE.
+     * Sets whether user can swipe to dismiss.
      */
     private fun setSwipeToDismiss(): SnackProgressBarCore {
         snackProgressBarLayout.setSwipeToDismiss(snackProgressBar.isSwipeToDismiss())

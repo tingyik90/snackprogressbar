@@ -14,7 +14,6 @@ public class DemoActivity extends AppCompatActivity {
     /* variables */
     private int queue = 1;
     private SnackProgressBarManager snackProgressBarManager;
-    private SnackProgressBar determinateType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,73 +32,93 @@ public class DemoActivity extends AppCompatActivity {
                 // (optional) change text size, default = 14sp
                 .setTextSize(14)
                 // (optional) set max lines, default = 2
-                .setMessageMaxLines(4)
+                .setMessageMaxLines(2)
                 // (optional) register onDisplayListener
                 .setOnDisplayListener(new SnackProgressBarManager.OnDisplayListener() {
                     @Override
-                    public void onShown(int onDisplayId) {
-                        Toast.makeText(getApplicationContext(),
-                                "SnackProgressBar(" + onDisplayId + ") shown!", Toast.LENGTH_SHORT).show();
+                    public void onShown(SnackProgressBar snackProgressBar, int onDisplayId) {
+                        Bundle bundle = snackProgressBar.getBundle();
+                        if (bundle != null) {
+                            int queueNo = bundle.getInt("queue");
+                            String toast = "Showing queue " + queueNo + "!";
+                            Toast.makeText(getApplicationContext(), toast, Toast.LENGTH_SHORT).show();
+                        }
                     }
 
                     @Override
-                    public void onDismissed(int onDisplayId) {
-                        Toast.makeText(getApplicationContext(),
-                                "SnackProgressBar(" + onDisplayId + ") dismissed!", Toast.LENGTH_SHORT).show();
+                    public void onDismissed(SnackProgressBar snackProgressBar, int onDisplayId) {
+                        Bundle bundle = snackProgressBar.getBundle();
+                        if (bundle != null) {
+                            int queueNo = bundle.getInt("queue");
+                            String toast = "Dismissing queue " + queueNo + "!";
+                            Toast.makeText(getApplicationContext(), toast, Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
 
         /* create SnackProgressBar */
-        SnackProgressBar actionType = new SnackProgressBar(
-                SnackProgressBar.TYPE_ACTION, "TYPE_ACTION - Swipe to dismiss.")
+        SnackProgressBar normalTypeWithAction = new SnackProgressBar(
+                SnackProgressBar.TYPE_NORMAL, "TYPE_NORMAL - If the action text is too long, a higher layout is used.")
                 // (required) set action button
                 .setAction("DISMISS", new SnackProgressBar.OnActionClickListener() {
                     @Override
                     public void onActionClick() {
                         Toast.makeText(getApplicationContext(), "Action Clicked!", Toast.LENGTH_SHORT).show();
                     }
-                })
-                // (optional) allow user swipe to dismiss, default = FALSE
-                .setSwipeToDismiss(true);
+                });
 
-        determinateType = new SnackProgressBar(
-                SnackProgressBar.TYPE_DETERMINATE, "TYPE_DETERMINATE.")
+        SnackProgressBar horizontalType = new SnackProgressBar(
+                SnackProgressBar.TYPE_HORIZONTAL, "TYPE_HORIZONTAL - Loading...")
+                // (optional) set the type of progressBar, default = FALSE
+                .setIsIndeterminate(false)
                 // (optional) set max progress, default = 100
                 .setProgressMax(100)
-                // (optional) show percentage, default = TRUE
+                // (optional) show percentage, default = FALSE
                 .setShowProgressPercentage(true);
 
-        SnackProgressBar messageType = new SnackProgressBar(
-                SnackProgressBar.TYPE_MESSAGE, "TYPE_MESSAGE - 0.")
+        SnackProgressBar horizontalTypeWithAction = new SnackProgressBar(
+                SnackProgressBar.TYPE_HORIZONTAL, "TYPE_HORIZONTAL - Loading...")
+                .setIsIndeterminate(true)
+                .setAction("DISMISS", new SnackProgressBar.OnActionClickListener() {
+                    @Override
+                    public void onActionClick() {
+                        Toast.makeText(getApplicationContext(), "Action Clicked!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        // assign storeId and store in SnackProgressBarManager (this is for easy calling only, not a required step)
+        snackProgressBarManager.put(normalTypeWithAction, 100);
+        snackProgressBarManager.put(horizontalType, 200);
+        snackProgressBarManager.put(horizontalTypeWithAction, 300);
+    }
+
+    public void normalBtnClick(View view) {
+        // create a normal snackProgressBar
+        SnackProgressBar normalType = new SnackProgressBar(
+                SnackProgressBar.TYPE_NORMAL, "TYPE_NORMAL - " + queue)
                 // (optional) allow user input, default = FALSE
                 .setAllowUserInput(true)
                 // (optional) allow user swipe to dismiss, default = FALSE
                 .setSwipeToDismiss(true)
                 // (optional) set icon
                 .setIconResource(R.mipmap.ic_launcher);
-
-        // assign storeId and store in SnackProgressBarManager
-        snackProgressBarManager.put(actionType, 100);
-        snackProgressBarManager.put(messageType, 300);
+        // create a bundle and attach to snackProgressBar which can be retrieved via OnDisplayListener
+        Bundle bundle = new Bundle();
+        bundle.putInt("queue", queue);
+        normalType.putBundle(bundle);
+        // dismiss after duration LENGTH_LONG, assign an onDisplayId for callback.
+        snackProgressBarManager.show(normalType, SnackProgressBarManager.LENGTH_LONG, 5000);
+        queue++;
     }
 
-    public void actionBtnClick(View view) {
-        // call to show via storeId, dismiss after duration LENGTH_SHORT
-        snackProgressBarManager.show(100, SnackProgressBarManager.LENGTH_SHORT);
+    public void normalWithActionBtnClick(View view) {
+        // call to show via storeId for 4 seconds
+        snackProgressBarManager.show(100, 4000);
     }
 
-    public void actionLongBtnClick(View view) {
-        SnackProgressBar actionLongType = new SnackProgressBar(
-                SnackProgressBar.TYPE_ACTION, "TYPE_ACTION - If the action text is too long, a higher layout is used.")
-                .setAction("LONG ACTION NAME", null)
-                .setSwipeToDismiss(true);
-        // call to show 4 seconds
-        snackProgressBarManager.show(actionLongType, 4000);
-    }
-
-    public void determinateBtnClick(View view) {
-        // or call to show via SnackProgressBar itself
-        snackProgressBarManager.show(determinateType, SnackProgressBarManager.LENGTH_INDEFINITE);
+    public void horizontalBtnClick(View view) {
+        // call to show via storeId indefinitely, update the progress
+        snackProgressBarManager.show(200, SnackProgressBarManager.LENGTH_INDEFINITE);
         new CountDownTimer(5000, 50) {
 
             int i = 0;
@@ -117,23 +136,26 @@ public class DemoActivity extends AppCompatActivity {
         }.start();
     }
 
-    public void indeterminateBtnClick(View view) {
-        SnackProgressBar indeterminateType = new SnackProgressBar(SnackProgressBar.TYPE_INDETERMINATE, "TYPE_INDETERMINATE.");
-        snackProgressBarManager.show(indeterminateType, SnackProgressBarManager.LENGTH_INDEFINITE);
-        new CountDownTimer(8000, 2000) {
+    public void horizontalWithActionBtnClick(View view) {
+        // call to show via storeId for LENGTH_LONG
+        snackProgressBarManager.show(300, SnackProgressBarManager.LENGTH_LONG);
+    }
+
+    public void circularBtnClick(View view) {
+        SnackProgressBar circularType = new SnackProgressBar(
+                SnackProgressBar.TYPE_CIRCULAR, "TYPE_CIRCULAR - Loading...")
+                .setIsIndeterminate(false)
+                .setProgressMax(100)
+                .setShowProgressPercentage(true);
+        snackProgressBarManager.show(circularType, SnackProgressBarManager.LENGTH_INDEFINITE);
+        new CountDownTimer(5000, 50) {
 
             int i = 0;
 
             @Override
             public void onTick(long millisUntilFinished) {
                 i++;
-                // get the currently showing indeterminateType and change the message
-                SnackProgressBar snackProgressBar = snackProgressBarManager.getLastShown();
-                if (snackProgressBar != null) {
-                    snackProgressBar.setMessage("TYPE_INDETERMINATE - " + i);
-                    // calling updateTo() will not hide and show again the SnackProgressBar
-                    snackProgressBarManager.updateTo(snackProgressBar);
-                }
+                snackProgressBarManager.setProgress(i);
             }
 
             @Override
@@ -143,20 +165,21 @@ public class DemoActivity extends AppCompatActivity {
         }.start();
     }
 
-    /* click multiple times to look at the effect of queue. */
-    public void messageBtnClick(View view) {
-        // grab the stored SnackProgressBar and set the message.
-        SnackProgressBar snackProgressBar = snackProgressBarManager.getSnackProgressBar(300);
-        if (snackProgressBar != null) {
-            snackProgressBar.setMessage("TYPE_MESSAGE - " + queue + ". " +
-                    "The height of SnackProgressBar is increased when there is multiple lines of message.");
-            // call to show via storeId, dismiss after duration LENGTH_LONG, assign an onDisplayId for callback.
-            snackProgressBarManager.show(300, SnackProgressBarManager.LENGTH_LONG, queue);
-            queue++;
-        }
+    public void circularWithActionBtnClick(View view) {
+        // this type of layout is not recommended, simply because it is ugly.
+        SnackProgressBar circularTypeWithAction = new SnackProgressBar(
+                SnackProgressBar.TYPE_CIRCULAR, "TYPE_CIRCULAR - Loading...")
+                .setIsIndeterminate(true)
+                .setAction("DISMISS", new SnackProgressBar.OnActionClickListener() {
+                    @Override
+                    public void onActionClick() {
+                        Toast.makeText(getApplicationContext(), "Action Clicked!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+        snackProgressBarManager.show(circularTypeWithAction, SnackProgressBarManager.LENGTH_LONG);
     }
 
-    /* after clicking messageBtn multiple times, click this to clear all queued SnackProgressBars */
+    /* after clicking normalBtn multiple times, click this to clear all queued SnackProgressBars */
     public void clearBtnClick(View view) {
         // clear all queued SnackProgressBars
         snackProgressBarManager.dismissAll();
