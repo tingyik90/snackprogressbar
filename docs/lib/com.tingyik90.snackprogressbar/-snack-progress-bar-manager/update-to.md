@@ -1,4 +1,4 @@
-[lib](../../index.md) / [com.tingyik90.snackprogressbar](../index.md) / [SnackProgressBarManager](index.md) / [updateTo](.)
+[lib](../../index.md) / [com.tingyik90.snackprogressbar](../index.md) / [SnackProgressBarManager](index.md) / [updateTo](./update-to.md)
 
 # updateTo
 

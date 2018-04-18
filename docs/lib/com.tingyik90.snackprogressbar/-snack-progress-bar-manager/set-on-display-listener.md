@@ -1,4 +1,4 @@
-[lib](../../index.md) / [com.tingyik90.snackprogressbar](../index.md) / [SnackProgressBarManager](index.md) / [setOnDisplayListener](.)
+[lib](../../index.md) / [com.tingyik90.snackprogressbar](../index.md) / [SnackProgressBarManager](index.md) / [setOnDisplayListener](./set-on-display-listener.md)
 
 # setOnDisplayListener
 

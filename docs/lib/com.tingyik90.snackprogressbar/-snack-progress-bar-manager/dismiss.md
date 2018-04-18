@@ -1,4 +1,4 @@
-[lib](../../index.md) / [com.tingyik90.snackprogressbar](../index.md) / [SnackProgressBarManager](index.md) / [dismiss](.)
+[lib](../../index.md) / [com.tingyik90.snackprogressbar](../index.md) / [SnackProgressBarManager](index.md) / [dismiss](./dismiss.md)
 
 # dismiss
 

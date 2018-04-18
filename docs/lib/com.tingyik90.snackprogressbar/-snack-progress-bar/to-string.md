@@ -1,4 +1,4 @@
-[lib](../../index.md) / [com.tingyik90.snackprogressbar](../index.md) / [SnackProgressBar](index.md) / [toString](.)
+[lib](../../index.md) / [com.tingyik90.snackprogressbar](../index.md) / [SnackProgressBar](index.md) / [toString](./to-string.md)
 
 # toString
 

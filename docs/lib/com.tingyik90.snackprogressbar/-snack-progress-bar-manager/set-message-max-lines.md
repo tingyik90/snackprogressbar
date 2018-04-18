@@ -1,4 +1,4 @@
-[lib](../../index.md) / [com.tingyik90.snackprogressbar](../index.md) / [SnackProgressBarManager](index.md) / [setMessageMaxLines](.)
+[lib](../../index.md) / [com.tingyik90.snackprogressbar](../index.md) / [SnackProgressBarManager](index.md) / [setMessageMaxLines](./set-message-max-lines.md)
 
 # setMessageMaxLines
 

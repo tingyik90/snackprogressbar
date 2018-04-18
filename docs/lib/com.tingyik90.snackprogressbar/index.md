@@ -1,4 +1,4 @@
-[lib](../index.md) / [com.tingyik90.snackprogressbar](.)
+[lib](../index.md) / [com.tingyik90.snackprogressbar](./index.md)
 
 ## Package com.tingyik90.snackprogressbar
 

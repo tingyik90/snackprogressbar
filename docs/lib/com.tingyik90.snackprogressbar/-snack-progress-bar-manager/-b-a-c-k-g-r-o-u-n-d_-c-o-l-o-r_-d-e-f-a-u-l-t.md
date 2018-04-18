@@ -1,4 +1,4 @@
-[lib](../../index.md) / [com.tingyik90.snackprogressbar](../index.md) / [SnackProgressBarManager](index.md) / [BACKGROUND_COLOR_DEFAULT](.)
+[lib](../../index.md) / [com.tingyik90.snackprogressbar](../index.md) / [SnackProgressBarManager](index.md) / [BACKGROUND_COLOR_DEFAULT](./-b-a-c-k-g-r-o-u-n-d_-c-o-l-o-r_-d-e-f-a-u-l-t.md)
 
 # BACKGROUND_COLOR_DEFAULT
 

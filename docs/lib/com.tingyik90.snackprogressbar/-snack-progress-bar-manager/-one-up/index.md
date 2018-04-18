@@ -1,4 +1,4 @@
-[lib](../../../index.md) / [com.tingyik90.snackprogressbar](../../index.md) / [SnackProgressBarManager](../index.md) / [OneUp](.)
+[lib](../../../index.md) / [com.tingyik90.snackprogressbar](../../index.md) / [SnackProgressBarManager](../index.md) / [OneUp](./index.md)
 
 # OneUp
 

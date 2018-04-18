@@ -1,4 +1,4 @@
-[lib](../../../index.md) / [com.tingyik90.snackprogressbar](../../index.md) / [SnackProgressBarManager](../index.md) / [ShowDuration](.)
+[lib](../../../index.md) / [com.tingyik90.snackprogressbar](../../index.md) / [SnackProgressBarManager](../index.md) / [ShowDuration](./index.md)
 
 # ShowDuration
 

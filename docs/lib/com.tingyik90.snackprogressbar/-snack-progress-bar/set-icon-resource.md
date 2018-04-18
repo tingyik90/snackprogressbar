@@ -1,4 +1,4 @@
-[lib](../../index.md) / [com.tingyik90.snackprogressbar](../index.md) / [SnackProgressBar](index.md) / [setIconResource](.)
+[lib](../../index.md) / [com.tingyik90.snackprogressbar](../index.md) / [SnackProgressBar](index.md) / [setIconResource](./set-icon-resource.md)
 
 # setIconResource
 

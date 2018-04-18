@@ -1,4 +1,4 @@
-[lib](../../../index.md) / [com.tingyik90.snackprogressbar](../../index.md) / [SnackProgressBar](../index.md) / [OnActionClickListener](index.md) / [onActionClick](.)
+[lib](../../../index.md) / [com.tingyik90.snackprogressbar](../../index.md) / [SnackProgressBar](../index.md) / [OnActionClickListener](index.md) / [onActionClick](./on-action-click.md)
 
 # onActionClick
 

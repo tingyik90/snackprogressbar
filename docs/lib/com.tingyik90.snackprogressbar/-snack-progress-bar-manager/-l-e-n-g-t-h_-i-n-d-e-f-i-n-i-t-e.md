@@ -1,8 +1,8 @@
-[lib](../../index.md) / [com.tingyik90.snackprogressbar](../index.md) / [SnackProgressBarManager](index.md) / [LENGTH_INDEFINITE](.)
+[lib](../../index.md) / [com.tingyik90.snackprogressbar](../index.md) / [SnackProgressBarManager](index.md) / [LENGTH_INDEFINITE](./-l-e-n-g-t-h_-i-n-d-e-f-i-n-i-t-e.md)
 
 # LENGTH_INDEFINITE
 
-`const val LENGTH_INDEFINITE: `[`Long`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html)
+`const val LENGTH_INDEFINITE: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)
 
 Show the SnackProgressBar indefinitely.
 Note that this will be changed to LENGTH_SHORT and dismissed

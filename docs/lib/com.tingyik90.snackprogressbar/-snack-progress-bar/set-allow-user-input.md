@@ -1,4 +1,4 @@
-[lib](../../index.md) / [com.tingyik90.snackprogressbar](../index.md) / [SnackProgressBar](index.md) / [setAllowUserInput](.)
+[lib](../../index.md) / [com.tingyik90.snackprogressbar](../index.md) / [SnackProgressBar](index.md) / [setAllowUserInput](./set-allow-user-input.md)
 
 # setAllowUserInput
 

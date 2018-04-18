@@ -1,4 +1,4 @@
-[lib](../../index.md) / [com.tingyik90.snackprogressbar](../index.md) / [SnackProgressBar](index.md) / [setIconBitmap](.)
+[lib](../../index.md) / [com.tingyik90.snackprogressbar](../index.md) / [SnackProgressBar](index.md) / [setIconBitmap](./set-icon-bitmap.md)
 
 # setIconBitmap
 

@@ -1,4 +1,4 @@
-[lib](../../index.md) / [com.tingyik90.snackprogressbar](../index.md) / [SnackProgressBarManager](index.md) / [setOverlayLayoutAlpha](.)
+[lib](../../index.md) / [com.tingyik90.snackprogressbar](../index.md) / [SnackProgressBarManager](index.md) / [setOverlayLayoutAlpha](./set-overlay-layout-alpha.md)
 
 # setOverlayLayoutAlpha
 
