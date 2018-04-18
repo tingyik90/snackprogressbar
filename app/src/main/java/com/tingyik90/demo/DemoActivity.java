@@ -58,9 +58,9 @@ public class DemoActivity extends AppCompatActivity {
 
         /* create SnackProgressBar */
         SnackProgressBar normalTypeWithAction = new SnackProgressBar(
-                SnackProgressBar.TYPE_NORMAL, "TYPE_NORMAL - If the action text is too long, a higher layout is used.")
+                SnackProgressBar.TYPE_NORMAL, "TYPE_NORMAL - If the message and action are too long, a higher layout is used.")
                 // (required) set action button
-                .setAction("DISMISS", new SnackProgressBar.OnActionClickListener() {
+                .setAction("LONG ACTION TEXT", new SnackProgressBar.OnActionClickListener() {
                     @Override
                     public void onActionClick() {
                         Toast.makeText(getApplicationContext(), "Action Clicked!", Toast.LENGTH_SHORT).show();
