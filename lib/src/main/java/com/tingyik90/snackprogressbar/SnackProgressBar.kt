@@ -19,11 +19,11 @@ import com.tingyik90.snackprogressbar.SnackProgressBar.Companion.TYPE_NORMAL
  * @property message Message of SnackProgressBar.
  */
 @Keep
-class SnackProgressBar(@Type private var type: Int, private var message: String) {
+class SnackProgressBar(@SnackProgressBarType private var type: Int, private var message: String) {
 
     @Retention(AnnotationRetention.SOURCE)
     @IntDef(TYPE_NORMAL, TYPE_HORIZONTAL, TYPE_CIRCULAR)
-    annotation class Type
+    annotation class SnackProgressBarType
 
     companion object {
         /**
