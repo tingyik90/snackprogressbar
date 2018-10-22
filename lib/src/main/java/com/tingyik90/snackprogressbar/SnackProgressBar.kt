@@ -2,10 +2,10 @@ package com.tingyik90.snackprogressbar
 
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.support.annotation.DrawableRes
-import android.support.annotation.IntDef
-import android.support.annotation.IntRange
-import android.support.annotation.Keep
+import androidx.annotation.DrawableRes
+import androidx.annotation.IntDef
+import androidx.annotation.IntRange
+import androidx.annotation.Keep
 import com.tingyik90.snackprogressbar.SnackProgressBar.Companion.TYPE_CIRCULAR
 import com.tingyik90.snackprogressbar.SnackProgressBar.Companion.TYPE_HORIZONTAL
 import com.tingyik90.snackprogressbar.SnackProgressBar.Companion.TYPE_NORMAL

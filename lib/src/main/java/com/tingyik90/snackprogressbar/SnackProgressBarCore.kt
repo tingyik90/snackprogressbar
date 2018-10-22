@@ -1,14 +1,14 @@
 package com.tingyik90.snackprogressbar
 
 import android.os.Handler
-import android.support.annotation.IntRange
-import android.support.annotation.Keep
-import android.support.design.widget.BaseTransientBottomBar
-import android.support.design.widget.CoordinatorLayout
-import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.IntRange
+import androidx.annotation.Keep
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.content.ContextCompat
+import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.tingyik90.snackprogressbar.SnackProgressBar.Companion.TYPE_CIRCULAR
 import com.tingyik90.snackprogressbar.SnackProgressBar.Companion.TYPE_HORIZONTAL
 import com.tingyik90.snackprogressbar.SnackProgressBar.Companion.TYPE_NORMAL

@@ -2,13 +2,6 @@ package com.tingyik90.snackprogressbar
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.support.annotation.ColorRes
-import android.support.annotation.Keep
-import android.support.design.widget.BaseTransientBottomBar
-import android.support.design.widget.CoordinatorLayout
-import android.support.v4.content.ContextCompat
-import android.support.v4.view.ViewCompat
-import android.support.v4.view.animation.FastOutSlowInInterpolator
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.MotionEvent
@@ -16,6 +9,13 @@ import android.view.VelocityTracker
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.annotation.ColorRes
+import androidx.annotation.Keep
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
+import com.google.android.material.snackbar.ContentViewCallback
 import kotlinx.android.synthetic.main.snackprogressbar.view.*
 
 /**
@@ -23,11 +23,11 @@ import kotlinx.android.synthetic.main.snackprogressbar.view.*
  */
 @Keep
 internal class SnackProgressBarLayout @JvmOverloads constructor(
-        context: Context,
-        attrs: AttributeSet? = null,
-        defStyleAttr: Int = 0)
-    : LinearLayout(context, attrs, defStyleAttr),
-        BaseTransientBottomBar.ContentViewCallback {
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : LinearLayout(context, attrs, defStyleAttr),
+    ContentViewCallback {
 
     /* variables */
     companion object {
@@ -53,10 +53,13 @@ internal class SnackProgressBarLayout @JvmOverloads constructor(
     private val startAlphaSwipeDistance = 0.1f     // as per Behavior in BaseTransientBottomBar
     private val endAlphaSwipeDistance = 0.6f       // as per Behavior in BaseTransientBottomBar
     private val swipeOutVelocity = 800f
-    private val heightSingle = resources.getDimension(R.dimen.snackProgressBar_height_single).toInt()        // height as per Material Design
-    private val heightMulti = resources.getDimension(R.dimen.snackProgressBar_height_multi).toInt()         // height as per Material Design
+    private val heightSingle =
+        resources.getDimension(R.dimen.snackProgressBar_height_single).toInt()        // height as per Material Design
+    private val heightMulti =
+        resources.getDimension(R.dimen.snackProgressBar_height_multi).toInt()         // height as per Material Design
     private val heightActionNextLine = resources.getDimension(R.dimen.snackProgressBar_height_actionNextLine).toInt()
-    private val defaultTextSizeDp = resources.getDimension(R.dimen.text_body_dp).toInt()      // use fixed dp for comparison purpose
+    private val defaultTextSizeDp =
+        resources.getDimension(R.dimen.text_body_dp).toInt()      // use fixed dp for comparison purpose
 
     private var isCoordinatorLayout: Boolean = false
     private var swipeToDismiss: Boolean = false
@@ -102,21 +105,27 @@ internal class SnackProgressBarLayout @JvmOverloads constructor(
      * @param progressBarColor R.color id.
      * @param progressTextColor R.color id.
      */
-    internal fun setColor(@ColorRes backgroundColor: Int, @ColorRes messageTextColor: Int,
-                          @ColorRes actionTextColor: Int, @ColorRes progressBarColor: Int,
-                          @ColorRes progressTextColor: Int) {
+    internal fun setColor(
+        @ColorRes backgroundColor: Int, @ColorRes messageTextColor: Int,
+        @ColorRes actionTextColor: Int, @ColorRes progressBarColor: Int,
+        @ColorRes progressTextColor: Int
+    ) {
         backgroundLayout.setBackgroundColor(ContextCompat.getColor(context, backgroundColor))
         messageText.setTextColor(ContextCompat.getColor(context, messageTextColor))
         actionText.setTextColor(ContextCompat.getColor(context, actionTextColor))
         actionNextLineText.setTextColor(ContextCompat.getColor(context, actionTextColor))
         horizontalProgressBar.progressDrawable.setColorFilter(
-                ContextCompat.getColor(context, progressBarColor), android.graphics.PorterDuff.Mode.SRC_IN)
+            ContextCompat.getColor(context, progressBarColor), android.graphics.PorterDuff.Mode.SRC_IN
+        )
         circularDeterminateProgressBar.progressDrawable.setColorFilter(
-                ContextCompat.getColor(context, progressBarColor), android.graphics.PorterDuff.Mode.SRC_IN)
+            ContextCompat.getColor(context, progressBarColor), android.graphics.PorterDuff.Mode.SRC_IN
+        )
         horizontalProgressBar.indeterminateDrawable.setColorFilter(
-                ContextCompat.getColor(context, progressBarColor), android.graphics.PorterDuff.Mode.SRC_IN)
+            ContextCompat.getColor(context, progressBarColor), android.graphics.PorterDuff.Mode.SRC_IN
+        )
         circularIndeterminateProgressBar.indeterminateDrawable.setColorFilter(
-                ContextCompat.getColor(context, progressBarColor), android.graphics.PorterDuff.Mode.SRC_IN)
+            ContextCompat.getColor(context, progressBarColor), android.graphics.PorterDuff.Mode.SRC_IN
+        )
         progressText.setTextColor(ContextCompat.getColor(context, progressTextColor))
         progressTextCircular.setTextColor(ContextCompat.getColor(context, progressTextColor))
     }
@@ -231,7 +240,8 @@ internal class SnackProgressBarLayout @JvmOverloads constructor(
         viewsToMove?.run {
             if (oldH != 0 && oldH != h) {
                 for (viewToMove in this) {
-                    ViewCompat.animate(viewToMove).translationYBy((oldH - h).toFloat()).setDuration(ANIMATION_DURATION).start()
+                    ViewCompat.animate(viewToMove).translationYBy((oldH - h).toFloat()).setDuration(ANIMATION_DURATION)
+                        .start()
                 }
             }
         }
@@ -240,24 +250,25 @@ internal class SnackProgressBarLayout @JvmOverloads constructor(
     // animation as per original Snackbar class
     override fun animateContentIn(delay: Int, duration: Int) {
         val viewsToAnimate = arrayOf(
-                messageText,
-                actionText,
-                actionNextLineText,
-                progressText,
-                horizontalProgressBar,
-                circularDeterminateProgressBar,
-                circularIndeterminateProgressBar)
+            messageText,
+            actionText,
+            actionNextLineText,
+            progressText,
+            horizontalProgressBar,
+            circularDeterminateProgressBar,
+            circularIndeterminateProgressBar
+        )
         viewsToAnimate.forEach { viewToAnimate ->
             if (viewToAnimate.visibility == View.VISIBLE) {
                 viewToAnimate.alpha = 0f
                 ViewCompat.animate(viewToAnimate).alpha(1f).setDuration(duration.toLong())
-                        .setStartDelay(delay.toLong()).start()
+                    .setStartDelay(delay.toLong()).start()
             }
         }
         viewsToMove?.run {
             for (viewToMove in this) {
                 ViewCompat.animate(viewToMove).translationY((-1 * measuredHeight).toFloat())
-                        .setDuration(ANIMATION_DURATION).start()
+                    .setDuration(ANIMATION_DURATION).start()
             }
         }
     }
@@ -265,24 +276,25 @@ internal class SnackProgressBarLayout @JvmOverloads constructor(
     // animation as per original Snackbar class
     override fun animateContentOut(delay: Int, duration: Int) {
         val viewsToAnimate = arrayOf(
-                messageText,
-                actionText,
-                actionNextLineText,
-                progressText,
-                horizontalProgressBar,
-                circularDeterminateProgressBar,
-                circularIndeterminateProgressBar)
+            messageText,
+            actionText,
+            actionNextLineText,
+            progressText,
+            horizontalProgressBar,
+            circularDeterminateProgressBar,
+            circularIndeterminateProgressBar
+        )
         viewsToAnimate.forEach { viewToAnimate ->
             if (viewToAnimate.visibility == View.VISIBLE) {
                 viewToAnimate.alpha = 1f
                 ViewCompat.animate(viewToAnimate).alpha(0f).setDuration(duration.toLong())
-                        .setStartDelay(delay.toLong()).start()
+                    .setStartDelay(delay.toLong()).start()
             }
         }
         viewsToMove?.run {
             for (viewToMove in this) {
                 ViewCompat.animate(viewToMove).translationY(0f)
-                        .setDuration(ANIMATION_DURATION).start()
+                    .setDuration(ANIMATION_DURATION).start()
             }
         }
     }
@@ -346,7 +358,8 @@ internal class SnackProgressBarLayout @JvmOverloads constructor(
                         when {
                             fractionTravelled < startAlphaSwipeDistance -> parentView.alpha = 1f
                             fractionTravelled > endAlphaSwipeDistance -> parentView.alpha = 0f
-                            else -> parentView.alpha = 1f - (fractionTravelled - startAlphaSwipeDistance) / (endAlphaSwipeDistance - startAlphaSwipeDistance)
+                            else -> parentView.alpha = 1f - (fractionTravelled - startAlphaSwipeDistance) /
+                                    (endAlphaSwipeDistance - startAlphaSwipeDistance)
                         }
                     }
                     MotionEvent.ACTION_UP -> {
@@ -393,15 +406,15 @@ internal class SnackProgressBarLayout @JvmOverloads constructor(
         val parentView = parent as View
         val direction = if (deltaX > 0f) 1f else -1f
         ViewCompat.animate(parentView)
-                .translationX(direction * parentView.width)
-                .setInterpolator(FastOutSlowInInterpolator())
-                .setDuration(ANIMATION_DURATION)
-                .setListener(null)      // remove listener that is attached in animateViewIn() of BaseTransientBottomBar
-                .start()
+            .translationX(direction * parentView.width)
+            .setInterpolator(FastOutSlowInInterpolator())
+            .setDuration(ANIMATION_DURATION)
+            .setListener(null)      // remove listener that is attached in animateViewIn() of BaseTransientBottomBar
+            .start()
         ViewCompat.animate(parentView)
-                .alpha(0f)
-                .setDuration(ANIMATION_DURATION)
-                .start()
+            .alpha(0f)
+            .setDuration(ANIMATION_DURATION)
+            .start()
     }
 
     /**
@@ -415,15 +428,15 @@ internal class SnackProgressBarLayout @JvmOverloads constructor(
         // animate if the layout has moved
         if (Math.abs(deltaX) >= 0f) {
             ViewCompat.animate(parentView)
-                    .translationX(0f)
-                    .setInterpolator(FastOutSlowInInterpolator())
-                    .setDuration(ANIMATION_DURATION)
-                    .setListener(null)      // remove listener that is attached in animateViewIn() of BaseTransientBottomBar
-                    .start()
+                .translationX(0f)
+                .setInterpolator(FastOutSlowInInterpolator())
+                .setDuration(ANIMATION_DURATION)
+                .setListener(null)      // remove listener that is attached in animateViewIn() of BaseTransientBottomBar
+                .start()
             ViewCompat.animate(parentView)
-                    .alpha(1f)
-                    .setDuration(ANIMATION_DURATION)
-                    .start()
+                .alpha(1f)
+                .setDuration(ANIMATION_DURATION)
+                .start()
         } else {
             // else just make sure the layout is at correct position
             parentView.translationX = 0f

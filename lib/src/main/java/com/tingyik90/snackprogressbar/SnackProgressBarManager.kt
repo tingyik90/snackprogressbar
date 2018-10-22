@@ -1,13 +1,13 @@
 package com.tingyik90.snackprogressbar
 
-import android.support.annotation.*
-import android.support.annotation.IntRange
-import android.support.design.widget.BaseTransientBottomBar
-import android.support.design.widget.CoordinatorLayout
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.annotation.*
+import androidx.annotation.IntRange
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import com.google.android.material.snackbar.BaseTransientBottomBar
 import java.util.*
 
 /**

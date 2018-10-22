@@ -2,10 +2,9 @@ package com.tingyik90.demo;
 
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
-
+import androidx.appcompat.app.AppCompatActivity;
 import com.tingyik90.snackprogressbar.SnackProgressBar;
 import com.tingyik90.snackprogressbar.SnackProgressBarManager;
 
