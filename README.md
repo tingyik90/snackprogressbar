@@ -3,6 +3,11 @@
 # SnackProgressBar
 Enhanced Snackbar for Android.
 
+## Important
+- v5.0 is a migration to androidx from v4.1. There is no change in all methods. Only use this if you have migrated.
+- v4.1 is a huge leap from v3.4 and offers much better flexibility. Snackbar types changed to `TYPE_NORMAL`, `TYPE_HORIZONTAL`, `TYPE_CIRCULAR`.
+- v3.4 is using Snackbar types of `TYPE_ACTION`, `TYPE_MESSAGE`, `TYPE_DETERMINATE`, `TYPE_INDETERMINATE`.
+
 ## Features
 1. Two types of ProgressBar (TYPE_HORIZONTAL and TYPE_CIRULAR) are available (see image below). It can also be used as a normal SnackBar.
 2. Supports multi-lines of message.
@@ -20,7 +25,6 @@ Enhanced Snackbar for Android.
 Watch the demo video at https://youtu.be/dbawFbr6iPk.
 
 ## Getting Started
-NOTE: v4.0 is a huge leap from v3.4 and offers much better flexibility. Please take note when migrating.
 
 ### SnackProgressBarManager
 Start by creating an instance of SnackProgressBarManager in your activity.
