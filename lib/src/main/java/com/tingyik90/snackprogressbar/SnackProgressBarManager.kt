@@ -89,10 +89,12 @@ class SnackProgressBarManager(view: View) {
          */
         @JvmField
         val OVERLAY_COLOR_DEFAULT = android.R.color.white
+
+        // Default displayId
+        private const val NO_DISPLAY_ID = -1
     }
 
     /* variables */
-    private val onDisplayIdDefault = -1
     private val storedBars = HashMap<Int, SnackProgressBar>()
     private val queueBars = ArrayList<SnackProgressBar>()
     private val queueOnDisplayIds = ArrayList<Int>()
@@ -117,6 +119,14 @@ class SnackProgressBarManager(view: View) {
      * Interface definition for a callback to be invoked when the SnackProgressBar is shown or dismissed.
      */
     interface OnDisplayListener {
+        /**
+         * Called when the SnackProgressBar view is inflated.
+         *
+         * @param view The view of the SnackProgressBar.
+         * @param onDisplayId OnDisplayId assigned to the SnackProgressBar which is shown.
+         */
+        fun onLayoutInflated(view: View, snackProgressBar: SnackProgressBar, onDisplayId: Int)
+
         /**
          * Called when the SnackProgressBar is shown.
          *
@@ -148,7 +158,7 @@ class SnackProgressBarManager(view: View) {
      * by another SnackProgressBar with the same storeId.
      *
      * @param snackProgressBar SnackProgressBar to be added.
-     * @param storeId          OneUp of the SnackProgressBar to be added.
+     * @param storeId          StoreId of the SnackProgressBar to be added.
      * @see SnackProgressBar
      *
      * @see .getSnackProgressBar
@@ -160,7 +170,7 @@ class SnackProgressBarManager(view: View) {
     /**
      * Retrieves the SnackProgressBar that was previously added into SnackProgressBarManager.
      *
-     * @param storeId OneUp of the SnackProgressBar stored in SnackProgressBarManager.
+     * @param storeId StoreId of the SnackProgressBar stored in SnackProgressBarManager.
      * @return SnackProgressBar of the storeId. Can be null.
      * @see .put
      */
@@ -182,7 +192,7 @@ class SnackProgressBarManager(view: View) {
      * If another SnackProgressBar is already showing, this SnackProgressBar will be queued
      * and shown accordingly after those queued are dismissed.
      *
-     * @param storeId  OneUp of the SnackProgressBar stored in SnackProgressBarManager.
+     * @param storeId  StoreId of the SnackProgressBar stored in SnackProgressBarManager.
      * @param duration Duration to show the SnackProgressBar of either
      * [LENGTH_SHORT], [LENGTH_LONG], [LENGTH_INDEFINITE]
      * or any positive millis.
@@ -190,8 +200,8 @@ class SnackProgressBarManager(view: View) {
      */
     fun show(@OneUp storeId: Int, @ShowDuration duration: Int) {
         val snackProgressBar = storedBars[storeId]
-        snackProgressBar?.run { addToQueue(this, duration, onDisplayIdDefault) }
-                ?: throw IllegalArgumentException("SnackProgressBar with storeId = $storeId is not found!")
+        snackProgressBar?.run { addToQueue(this, duration, NO_DISPLAY_ID) }
+            ?: throw IllegalArgumentException("SnackProgressBar with storeId = $storeId is not found!")
     }
 
     /**
@@ -199,7 +209,7 @@ class SnackProgressBarManager(view: View) {
      * If another SnackProgressBar is already showing, this SnackProgressBar will be queued
      * and shown accordingly after those queued are dismissed.
      *
-     * @param storeId     OneUp of the SnackProgressBar stored in SnackProgressBarManager.
+     * @param storeId     StoreId of the SnackProgressBar stored in SnackProgressBarManager.
      * @param duration    Duration to show the SnackProgressBar of either
      * [LENGTH_SHORT], [LENGTH_LONG], [LENGTH_INDEFINITE]
      * or any positive millis.
@@ -209,7 +219,7 @@ class SnackProgressBarManager(view: View) {
     fun show(@OneUp storeId: Int, @ShowDuration duration: Int, @OneUp onDisplayId: Int) {
         val snackProgressBar = storedBars[storeId]
         snackProgressBar?.run { show(this, duration, onDisplayId) }
-                ?: throw IllegalArgumentException("SnackProgressBar with storeId = $storeId is not found!")
+            ?: throw IllegalArgumentException("SnackProgressBar with storeId = $storeId is not found!")
     }
 
     /**
@@ -223,7 +233,7 @@ class SnackProgressBarManager(view: View) {
      * or any positive millis.
      */
     fun show(snackProgressBar: SnackProgressBar, @ShowDuration duration: Int) {
-        addToQueue(snackProgressBar, duration, onDisplayIdDefault)
+        addToQueue(snackProgressBar, duration, NO_DISPLAY_ID)
     }
 
     /**
@@ -246,12 +256,12 @@ class SnackProgressBarManager(view: View) {
      * with the corresponding storeId i.e. updating without animation.
      * Note: This does not change the queue.
      *
-     * @param storeId OneUp of the SnackProgressBar stored in SnackProgressBarManager.
+     * @param storeId StoreId of the SnackProgressBar stored in SnackProgressBarManager.
      */
     fun updateTo(@OneUp storeId: Int) {
         val snackProgressBar = storedBars[storeId]
         snackProgressBar?.run { updateTo(this) }
-                ?: throw IllegalArgumentException("SnackProgressBar with storeId = $storeId is not found!")
+            ?: throw IllegalArgumentException("SnackProgressBar with storeId = $storeId is not found!")
     }
 
     /**
@@ -449,18 +459,20 @@ class SnackProgressBarManager(view: View) {
         // get the queue number as the last of queue list
         val queue = queueBars.size
         // create a new object
-        val queueBar = SnackProgressBar(snackProgressBar.getType(),
-                snackProgressBar.getMessage(),
-                snackProgressBar.getAction(),
-                snackProgressBar.getOnActionClickListener(),
-                snackProgressBar.getIconBitmap(),
-                snackProgressBar.getIconResource(),
-                snackProgressBar.getProgressMax(),
-                snackProgressBar.isAllowUserInput(),
-                snackProgressBar.isSwipeToDismiss(),
-                snackProgressBar.isIndeterminate(),
-                snackProgressBar.isShowProgressPercentage(),
-                snackProgressBar.getBundle())
+        val queueBar = SnackProgressBar(
+            snackProgressBar.getType(),
+            snackProgressBar.getMessage(),
+            snackProgressBar.getAction(),
+            snackProgressBar.getOnActionClickListener(),
+            snackProgressBar.getIconBitmap(),
+            snackProgressBar.getIconResource(),
+            snackProgressBar.getProgressMax(),
+            snackProgressBar.isAllowUserInput(),
+            snackProgressBar.isSwipeToDismiss(),
+            snackProgressBar.isIndeterminate(),
+            snackProgressBar.isShowProgressPercentage(),
+            snackProgressBar.getBundle()
+        )
         // put in queue
         queueBars.add(queueBar)
         queueOnDisplayIds.add(onDisplayId)
@@ -493,43 +505,41 @@ class SnackProgressBarManager(view: View) {
             // create SnackProgressBarCore
             val finalDuration = duration
             val snackProgressBarCore = SnackProgressBarCore.make(parentView, snackProgressBar, duration, viewsToMove)
-                    .setOverlayLayout(overlayColor, overlayLayoutAlpha)
-                    .setColor(backgroundColor, messageTextColor, actionTextColor, progressBarColor, progressTextColor)
-                    .setTextSize(textSize)
-                    .setMaxLines(maxLines)
-                    .addCallback(object : BaseTransientBottomBar.BaseCallback<SnackProgressBarCore>() {
-                        override fun onShown(snackProgressBarCore: SnackProgressBarCore) {
-                            // set current
-                            currentCore = snackProgressBarCore
-                            // callback onDisplayListener
-                            onDisplayListener?.run {
-                                if (onDisplayId != onDisplayIdDefault) {
-                                    this.onShown(snackProgressBarCore.getSnackProgressBar(), onDisplayId)
-                                }
-                            }
-                        }
+                .setOverlayLayout(overlayColor, overlayLayoutAlpha)
+                .setColor(backgroundColor, messageTextColor, actionTextColor, progressBarColor, progressTextColor)
+                .setTextSize(textSize)
+                .setMaxLines(maxLines)
+                .addCallback(object : BaseTransientBottomBar.BaseCallback<SnackProgressBarCore>() {
+                    override fun onShown(snackProgressBarCore: SnackProgressBarCore) {
+                        // set current
+                        currentCore = snackProgressBarCore
+                        // callback onDisplayListener
+                        onDisplayListener?.onShown(snackProgressBarCore.getSnackProgressBar(), onDisplayId)
+                    }
 
-                        override fun onDismissed(snackProgressBarCore: SnackProgressBarCore, event: Int) {
-                            // remove overlayLayout
-                            snackProgressBarCore.removeOverlayLayout()
-                            // reset current
-                            currentCore = null
-                            // callback onDisplayListener
-                            onDisplayListener?.run {
-                                if (onDisplayId != onDisplayIdDefault) {
-                                    this.onDismissed(snackProgressBarCore.getSnackProgressBar(), onDisplayId)
-                                }
-                            }
-                            // play next if this item is dismissed automatically later
-                            if (finalDuration != LENGTH_INDEFINITE) {
-                                nextQueue()
-                            }
+                    override fun onDismissed(snackProgressBarCore: SnackProgressBarCore, event: Int) {
+                        // remove overlayLayout
+                        snackProgressBarCore.removeOverlayLayout()
+                        // reset current
+                        currentCore = null
+                        // callback onDisplayListener
+                        onDisplayListener?.onDismissed(snackProgressBarCore.getSnackProgressBar(), onDisplayId)
+                        // play next if this item is dismissed automatically later
+                        if (finalDuration != LENGTH_INDEFINITE) {
+                            nextQueue()
                         }
-                    })
+                    }
+                })
             // reset queue if this is last item in queue with LENGTH_INDEFINITE
             if (duration == LENGTH_INDEFINITE) {
                 resetQueue()
             }
+            // allow users to manipulate the view
+            onDisplayListener?.onLayoutInflated(
+                snackProgressBarCore.view,
+                snackProgressBarCore.getSnackProgressBar(),
+                onDisplayId
+            )
             snackProgressBarCore.show()
         } else {
             // else, queue is done
@@ -585,6 +595,6 @@ class SnackProgressBarManager(view: View) {
         } while (view != null)
         // use fallback since CoordinatorLayout and other alternative not found
         fallback?.run { return this }
-                ?: throw IllegalArgumentException("No suitable parent found from the given view. " + "Please provide a valid view.")
+            ?: throw IllegalArgumentException("No suitable parent found from the given view. " + "Please provide a valid view.")
     }
 }
