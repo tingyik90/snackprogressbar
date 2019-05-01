@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.tingyik90.demo">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.tingyik90.demo"
+    tools:ignore="AllowBackup,GoogleAppIndexingWarning">
 
     <application
+        android:name=".DemoApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
