@@ -1,21 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.tingyik90.snackprogressbar.SnackProgressBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/snackProgressBar_layout_background"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/background"
     android:clickable="true"
     android:focusable="false"
     android:focusableInTouchMode="false"
     android:gravity="bottom"
+    android:longClickable="true"
     android:orientation="vertical"
-    android:visibility="visible">
+    android:visibility="visible"
+    tools:ignore="RtlHardcoded,KeyboardInaccessibleWidget">
 
     <ProgressBar
         android:id="@+id/snackProgressBar_progressbar_horizontal"
         style="@style/Widget.AppCompat.ProgressBar.Horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="-7dp"
         android:layout_marginTop="-7dp"
+        android:layout_marginBottom="-7dp"
         android:clickable="true"
         android:indeterminate="false"
         android:max="100"
@@ -23,152 +28,130 @@
         android:visibility="gone" />
 
     <LinearLayout
-        android:id="@+id/snackProgressBar_layout_background"
+        android:id="@+id/snackProgressBar_layout_main"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/background"
-        android:clickable="true"
-        android:longClickable="true"
-        android:orientation="vertical"
-        android:visibility="visible">
+        android:orientation="horizontal">
 
-        <LinearLayout
-            android:id="@+id/snackProgressBar_layout_main"
-            android:layout_width="match_parent"
+        <ImageView
+            android:id="@+id/snackProgressBar_img_icon"
+            android:layout_width="@dimen/snackProgressBar_size_icon"
             android:layout_height="@dimen/snackProgressBar_height_single"
-            android:orientation="horizontal">
+            android:layout_gravity="center"
+            android:layout_marginLeft="@dimen/snackProgressBar_padding_left_right"
+            android:clickable="false"
+            android:longClickable="false"
+            android:scaleType="fitCenter"
+            android:visibility="gone" />
 
-            <ImageView
-                android:id="@+id/snackProgressBar_img_icon"
-                android:layout_width="@dimen/snackProgressBar_size_icon"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:layout_marginLeft="@dimen/snackProgressBar_padding_left_right"
-                android:clickable="false"
-                android:longClickable="false"
-                android:scaleType="fitCenter"
-                android:visibility="gone" />
+        <TextView
+            android:id="@+id/snackProgressBar_txt_message"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/snackProgressBar_height_single"
+            android:layout_gravity="center"
+            android:layout_weight="100"
+            android:clickable="false"
+            android:ellipsize="end"
+            android:gravity="center_vertical|start"
+            android:longClickable="false"
+            android:maxLines="2"
+            android:paddingLeft="@dimen/snackProgressBar_padding_left_right"
+            android:paddingRight="@dimen/snackProgressBar_padding_left_right"
+            android:text=""
+            android:textAlignment="viewStart"
+            android:textColor="@color/textWhitePrimary"
+            android:textSize="@dimen/text_body"
+            android:visibility="visible" />
 
-            <TextView
-                android:id="@+id/snackProgressBar_txt_message"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:layout_weight="100"
-                android:clickable="false"
-                android:ellipsize="end"
-                android:gravity="center_vertical|left|start"
-                android:longClickable="false"
-                android:maxLines="2"
-                android:paddingLeft="@dimen/snackProgressBar_padding_left_right"
-                android:paddingRight="@dimen/snackProgressBar_padding_left_right"
-                android:text=""
-                android:textAlignment="viewStart"
-                android:textColor="@color/textWhitePrimary"
-                android:textSize="@dimen/text_body"
-                android:visibility="visible" />
+        <ProgressBar
+            android:id="@+id/snackProgressBar_progressbar_circular_indeterminate"
+            style="@style/Widget.AppCompat.ProgressBar"
+            android:layout_width="@dimen/snackProgressBar_size_progressbar_circular"
+            android:layout_height="@dimen/snackProgressBar_height_single"
+            android:layout_gravity="center"
+            android:layout_marginRight="@dimen/snackProgressBar_padding_left_right"
+            android:clickable="false"
+            android:indeterminate="true"
+            android:longClickable="false"
+            android:visibility="gone" />
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center">
 
             <ProgressBar
-                android:id="@+id/snackProgressBar_progressbar_circular_indeterminate"
-                style="@style/Widget.AppCompat.ProgressBar"
+                android:id="@+id/snackProgressBar_progressbar_circular_determinate"
+                style="?android:progressBarStyleHorizontal"
                 android:layout_width="@dimen/snackProgressBar_size_progressbar_circular"
-                android:layout_height="match_parent"
+                android:layout_height="@dimen/snackProgressBar_height_single"
                 android:layout_gravity="center"
                 android:layout_marginRight="@dimen/snackProgressBar_padding_left_right"
                 android:clickable="false"
-                android:indeterminate="true"
+                android:indeterminate="false"
                 android:longClickable="false"
+                android:max="100"
+                android:progress="0"
+                android:progressDrawable="@drawable/progressbar_circle"
+                android:rotation="-90"
                 android:visibility="gone" />
 
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent">
-
-                <ProgressBar
-                    android:id="@+id/snackProgressBar_progressbar_circular_determinate"
-                    style="?android:progressBarStyleHorizontal"
-                    android:layout_width="@dimen/snackProgressBar_size_progressbar_circular"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:layout_marginRight="@dimen/snackProgressBar_padding_left_right"
-                    android:clickable="false"
-                    android:indeterminate="false"
-                    android:longClickable="false"
-                    android:max="100"
-                    android:progress="0"
-                    android:progressDrawable="@drawable/progressbar_circle"
-                    android:rotation="-90"
-                    android:visibility="gone" />
-
-                <TextView
-                    android:id="@+id/snackProgressBar_txt_progress_circular"
-                    android:layout_width="@dimen/snackProgressBar_size_progressbar_circular"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:layout_marginRight="@dimen/snackProgressBar_padding_left_right"
-                    android:clickable="false"
-                    android:gravity="center"
-                    android:longClickable="false"
-                    android:text="0"
-                    android:textColor="@color/textWhitePrimary"
-                    android:textSize="@dimen/text_body"
-                    android:visibility="gone" />
-
-            </RelativeLayout>
-
             <TextView
-                android:id="@+id/snackProgressBar_txt_progress"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:id="@+id/snackProgressBar_txt_progress_circular"
+                android:layout_width="@dimen/snackProgressBar_size_progressbar_circular"
+                android:layout_height="@dimen/snackProgressBar_height_single"
                 android:layout_gravity="center"
                 android:layout_marginRight="@dimen/snackProgressBar_padding_left_right"
                 android:clickable="false"
                 android:gravity="center"
                 android:longClickable="false"
-                android:text="0%"
+                android:text="0"
                 android:textColor="@color/textWhitePrimary"
                 android:textSize="@dimen/text_body"
                 android:visibility="gone" />
 
-            <TextView
-                android:id="@+id/snackProgressBar_txt_action"
-                style="@style/FontMediumStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:layout_marginRight="@dimen/snackProgressBar_padding_left_right"
-                android:clickable="true"
-                android:gravity="center_vertical"
-                android:longClickable="false"
-                android:textColor="@color/colorAccent"
-                android:textSize="@dimen/text_body"
-                android:visibility="gone" />
+        </RelativeLayout>
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/snackProgressBar_layout_actionNextLine"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/snackProgressBar_height_actionNextLine"
+        <TextView
+            android:id="@+id/snackProgressBar_txt_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/snackProgressBar_height_single"
+            android:layout_gravity="center"
+            android:layout_marginRight="@dimen/snackProgressBar_padding_left_right"
             android:clickable="false"
-            android:gravity="right|top"
+            android:gravity="center"
             android:longClickable="false"
-            android:visibility="gone">
+            android:text="0%"
+            android:textColor="@color/textWhitePrimary"
+            android:textSize="@dimen/text_body"
+            android:visibility="gone" />
 
-            <TextView
-                android:id="@+id/snackProgressBar_txt_actionNextLine"
-                style="@style/FontMediumStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginRight="@dimen/snackProgressBar_padding_left_right"
-                android:clickable="true"
-                android:gravity="top"
-                android:longClickable="false"
-                android:textColor="@color/colorAccent"
-                android:textSize="@dimen/text_body" />
-
-        </LinearLayout>
+        <TextView
+            android:id="@+id/snackProgressBar_txt_action"
+            style="@style/FontMediumStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/snackProgressBar_height_single"
+            android:layout_gravity="center"
+            android:layout_marginRight="@dimen/snackProgressBar_padding_left_right"
+            android:clickable="true"
+            android:gravity="center_vertical"
+            android:longClickable="false"
+            android:textColor="@color/colorAccent"
+            android:textSize="@dimen/text_body"
+            android:visibility="gone" />
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/snackProgressBar_txt_actionNextLine"
+        style="@style/FontMediumStyle"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/snackProgressBar_height_actionNextLine"
+        android:layout_marginRight="@dimen/snackProgressBar_padding_left_right"
+        android:clickable="true"
+        android:gravity="top|right"
+        android:longClickable="false"
+        android:textColor="@color/colorAccent"
+        android:textSize="@dimen/text_body" />
 
 </com.tingyik90.snackprogressbar.SnackProgressBarLayout>
