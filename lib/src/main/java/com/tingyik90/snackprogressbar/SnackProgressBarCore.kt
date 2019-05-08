@@ -1,9 +1,11 @@
 package com.tingyik90.snackprogressbar
 
+import android.os.Build
 import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import androidx.annotation.IntRange
 import androidx.annotation.Keep
 import androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -15,22 +17,31 @@ import com.tingyik90.snackprogressbar.SnackProgressBar.Companion.TYPE_NORMAL
 
 /**
  * Core class constructing the SnackProgressBar.
+ *
+ * @constructor Create a SnackProgressBarCore.
+ * @param parentView View to hold the SnackProgressBarLayout.
+ * @param snackProgressBarLayout [SnackProgressBarLayout] to be displayed.
+ * @param overlayLayout OverlayLayout to be displayed.
+ * @param showDuration Duration to show the SnackProgressBarLayout.
+ * @param snackProgressBar [SnackProgressBar] which is attached to the SnackProgressBarLayout.
  */
 @Keep
 internal class SnackProgressBarCore private constructor(
-        private val parentView: ViewGroup,
-        private val snackProgressBarLayout: SnackProgressBarLayout,
-        private val overlayLayout: View,
-        private var showDuration: Int,
-        private var snackProgressBar: SnackProgressBar)
-    : BaseTransientBottomBar<SnackProgressBarCore>(parentView, snackProgressBarLayout, snackProgressBarLayout) {
+    private val parentView: ViewGroup,
+    val snackProgressBarLayout: SnackProgressBarLayout,
+    val overlayLayout: FrameLayout,
+    private var showDuration: Int,
+    private var snackProgressBar: SnackProgressBar
+) : BaseTransientBottomBar<SnackProgressBarCore>(parentView, snackProgressBarLayout, snackProgressBarLayout) {
 
     /* variables */
-    private val shortDurationMillis = 1500          // as per SnackbarManager
-    private val longDurationMillis = 2750           // as per SnackbarManager
+    // Duration as per SnackbarManager
+    private val shortDurationMillis = 1500
+    private val longDurationMillis = 2750
     private val handler = Handler()
     private val runnable = Runnable { dismiss() }
 
+    /* companion object */
     companion object {
         /**
          * Prepares SnackProgressBarCore.
@@ -40,24 +51,35 @@ internal class SnackProgressBarCore private constructor(
          * @param showDuration     Duration to show the SnackProgressBar.
          * @param viewsToMove      View to be animated along with the SnackProgressBar.
          */
-        internal fun make(parentView: ViewGroup, snackProgressBar: SnackProgressBar,
-                          showDuration: Int, viewsToMove: Array<View>?): SnackProgressBarCore {
-            // get inflater from parent
+        internal fun make(
+            parentView: ViewGroup, snackProgressBar: SnackProgressBar,
+            showDuration: Int, viewsToMove: Array<View>?
+        ): SnackProgressBarCore {
+            // Get inflater from parent
             val inflater = LayoutInflater.from(parentView.context)
-            // add overlayLayout as background
-            val overlayLayout = inflater.inflate(R.layout.overlay, parentView, false)
+            // Add overlayLayout as background
+            val overlayLayout = inflater.inflate(R.layout.overlay, parentView, false) as FrameLayout
+            // Starting v6.0, assign unique view id to overlayLayout.
+            // There has been cases where overlayLayout is not correctly removed when the first (with overLay)
+            // and second (without overLay) snackProgressBar are updated too quickly. This maybe due to removing the
+            // incorrect child from parent view.
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN) {
+                overlayLayout.id = View.generateViewId()
+            }
             parentView.addView(overlayLayout)
-            // inflate SnackProgressBarLayout and pass viewsToMove
+            // Inflate SnackProgressBarLayout and pass viewsToMove
             val snackProgressBarLayout = inflater.inflate(
-                    R.layout.snackprogressbar, parentView, false) as SnackProgressBarLayout
+                R.layout.snackprogressbar, parentView, false
+            ) as SnackProgressBarLayout
             snackProgressBarLayout.setViewsToMove(viewsToMove)
-            // create SnackProgressBarCore
+            // Create SnackProgressBarCore
             val snackProgressBarCore = SnackProgressBarCore(
-                    parentView,
-                    snackProgressBarLayout,
-                    overlayLayout,
-                    showDuration,
-                    snackProgressBar)
+                parentView,
+                snackProgressBarLayout,
+                overlayLayout,
+                showDuration,
+                snackProgressBar
+            )
             snackProgressBarCore.updateTo(snackProgressBar)
             return snackProgressBarCore
         }
@@ -111,8 +133,20 @@ internal class SnackProgressBarCore private constructor(
      * @param progressBarColor R.color id.
      * @param progressTextColor R.color id.
      */
-    internal fun setColor(backgroundColor: Int, messageTextColor: Int, actionTextColor: Int, progressBarColor: Int, progressTextColor: Int): SnackProgressBarCore {
-        snackProgressBarLayout.setColor(backgroundColor, messageTextColor, actionTextColor, progressBarColor, progressTextColor)
+    internal fun setColor(
+        backgroundColor: Int,
+        messageTextColor: Int,
+        actionTextColor: Int,
+        progressBarColor: Int,
+        progressTextColor: Int
+    ): SnackProgressBarCore {
+        snackProgressBarLayout.setColor(
+            backgroundColor,
+            messageTextColor,
+            actionTextColor,
+            progressBarColor,
+            progressTextColor
+        )
         return this
     }
 
@@ -143,17 +177,17 @@ internal class SnackProgressBarCore private constructor(
      */
     internal fun setProgress(@IntRange(from = 0) progress: Int): SnackProgressBarCore {
         val progressBar =
-                when (snackProgressBar.getType()) {
-                    TYPE_HORIZONTAL -> snackProgressBarLayout.horizontalProgressBar
-                    TYPE_CIRCULAR -> snackProgressBarLayout.circularDeterminateProgressBar
-                    else -> null
-                }
+            when (snackProgressBar.getType()) {
+                TYPE_HORIZONTAL -> snackProgressBarLayout.horizontalProgressBar
+                TYPE_CIRCULAR -> snackProgressBarLayout.circularDeterminateProgressBar
+                else -> null
+            }
         if (progressBar != null) {
             progressBar.progress = progress
             val progress100 = (progress.toFloat() / progressBar.max * 100).toInt()
             var progressString = progress100.toString()
             snackProgressBarLayout.progressTextCircular.text = progressString
-            // include % for progressText
+            // Include % for progressText
             progressString += "%"
             snackProgressBarLayout.progressText.text = progressString
         }
@@ -164,18 +198,18 @@ internal class SnackProgressBarCore private constructor(
      * Show the SnackProgressBar
      */
     override fun show() {
-        // show overLayLayout
+        // Show overLayLayout
         showOverlayLayout()
-        // use default SnackManager if it is CoordinatorLayout
+        // Use default SnackManager if it is CoordinatorLayout
         if (parentView is CoordinatorLayout) {
             duration = showDuration
         }
-        // else, set up own handler for dismiss countdown
+        // Else, set up own handler for dismiss countdown
         else {
             setOnBarTouchListener()
-            // disable SnackManager by stopping countdown
-            duration = BaseTransientBottomBar.LENGTH_INDEFINITE
-            // assign the actual showDuration if dismiss is required
+            // Disable SnackManager by stopping countdown
+            duration = LENGTH_INDEFINITE
+            // Assign the actual showDuration if dismiss is required
             if (showDuration != LENGTH_INDEFINITE) {
                 when (showDuration) {
                     LENGTH_SHORT -> showDuration = shortDurationMillis
@@ -192,7 +226,7 @@ internal class SnackProgressBarCore private constructor(
      * Note: Layout positioning for action is handled by [SnackProgressBarLayout]
      */
     private fun setType(): SnackProgressBarCore {
-        // update view
+        // Update view
         when (snackProgressBar.getType()) {
             TYPE_NORMAL -> {
                 snackProgressBarLayout.horizontalProgressBar.visibility = View.GONE
@@ -245,10 +279,10 @@ internal class SnackProgressBarCore private constructor(
     private fun setAction(): SnackProgressBarCore {
         val action = snackProgressBar.getAction()
         val onActionClickListener = snackProgressBar.getOnActionClickListener()
-        // set the text
+        // Set the text
         snackProgressBarLayout.actionText.text = action.toUpperCase()
         snackProgressBarLayout.actionNextLineText.text = action.toUpperCase()
-        // set the onClickListener
+        // Set the onClickListener
         val onClickListener = View.OnClickListener {
             onActionClickListener?.onActionClick()
             dismiss()
@@ -330,13 +364,13 @@ internal class SnackProgressBarCore private constructor(
             override fun onTouch(event: Int) {
                 when (event) {
                     SnackProgressBarLayout.ACTION_DOWN ->
-                        // when user touched the SnackProgressBar, stop the dismiss countdown
+                        // When user touched the SnackProgressBar, stop the dismiss countdown
                         handler.removeCallbacks(runnable)
                     SnackProgressBarLayout.SWIPE_OUT ->
-                        // once the SnackProgressBar is swiped out, dismiss after animation ends
+                        // Once the SnackProgressBar is swiped out, dismiss after animation ends
                         handler.postDelayed(runnable, SnackProgressBarLayout.ANIMATION_DURATION)
                     SnackProgressBarLayout.SWIPE_IN ->
-                        // once the SnackProgressBar is swiped in, resume dismiss countdown
+                        // Once the SnackProgressBar is swiped in, resume dismiss countdown
                         if (showDuration != SnackProgressBarManager.LENGTH_INDEFINITE) {
                             handler.postDelayed(runnable, showDuration.toLong())
                         }
