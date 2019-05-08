@@ -3,6 +3,7 @@ package com.tingyik90.demo
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.View
+import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.tingyik90.snackprogressbar.SnackProgressBar
@@ -43,14 +44,24 @@ class DemoActivity : AppCompatActivity() {
             .setMessageMaxLines(2)
             // (Optional) Register onDisplayListener
             .setOnDisplayListener(object : SnackProgressBarManager.OnDisplayListener {
-                override fun onLayoutChanged(
+                override fun onLayoutInflated(
                     snackProgressBarLayout: SnackProgressBarLayout,
-                    overlayLayout: View,
+                    overlayLayout: FrameLayout,
                     snackProgressBar: SnackProgressBar,
                     onDisplayId: Int
                 ) {
                     // Starting v6.0, both snackProgressBarLayout and overlayLayout are exposed.
-                    // You can edit them directly without reflection.
+                    // You can edit them directly without reflection e.g.
+                    /*
+                    println(snackProgressBarLayout.messageText.text)
+                     */
+                    // You can also grab its parent so that the view floats above bottom navigation bar etc.
+                    /*
+                    val view = snackProgressBarLayout.parent as View
+                    val params = view.layoutParams as FrameLayout.LayoutParams
+                    params.setMargins(0,0,0, 200)
+                    view.layoutParams = params
+                     */
                 }
 
                 override fun onShown(snackProgressBar: SnackProgressBar, onDisplayId: Int) {
@@ -98,7 +109,7 @@ class DemoActivity : AppCompatActivity() {
         snackProgressBarManager.show(100, 4000)
     }
 
-    fun createSnackProgressBarAndStoreInManager() {
+    private fun createSnackProgressBarAndStoreInManager() {
         val normalTypeWithAction =
             SnackProgressBar(
                 SnackProgressBar.TYPE_NORMAL,
@@ -187,7 +198,7 @@ class DemoActivity : AppCompatActivity() {
         snackProgressBarManager.show(circularTypeWithAction, SnackProgressBarManager.LENGTH_LONG)
     }
 
-    /* After clicking normalBtn multiple times, click this to clear all queued SnackProgressBars */
+    // After clicking normalBtn multiple times, click this to clear all queued SnackProgressBars
     fun clearBtnClick(view: View) {
         // clear all queued SnackProgressBars
         snackProgressBarManager.dismissAll()
@@ -197,7 +208,10 @@ class DemoActivity : AppCompatActivity() {
         super.onStop()
         // IMPORTANT: Call disable in onPause / onStop / onDestroy to prevent leak due to Handler not GCed.
         // If you provided a lifeCycleOwner, then this is automatically called in onDestroy.
-        // snackProgressBarManager.disable();
+        // This sample app includes LeakCanary for leak test.
+        /*
+        snackProgressBarManager.disable();
+         */
     }
 
 }
