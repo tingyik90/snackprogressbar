@@ -266,6 +266,7 @@ class SnackProgressBarLayout : LinearLayout, ContentViewCallback {
      */
     override fun animateContentIn(delay: Int, duration: Int) {
         val viewsToAnimate = arrayOf(
+            iconImage,
             messageText,
             actionText,
             actionNextLineText,
@@ -302,6 +303,7 @@ class SnackProgressBarLayout : LinearLayout, ContentViewCallback {
      */
     override fun animateContentOut(delay: Int, duration: Int) {
         val viewsToAnimate = arrayOf(
+            iconImage,
             messageText,
             actionText,
             actionNextLineText,
