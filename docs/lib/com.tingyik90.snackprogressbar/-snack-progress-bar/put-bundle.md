@@ -4,8 +4,12 @@
 
 `fun putBundle(bundle: `[`Bundle`](https://developer.android.com/reference/android/os/Bundle.html)`): `[`SnackProgressBar`](index.md)
 
-Sets the additional bundle of SnackProgressBar.
+Sets the additional bundle of SnackProgressBar, which can be retrieved later.
 
 ### Parameters
 
-`bundle` - Bundle of SnackProgressBar.
+`bundle` - Any additional information to be attached via [Bundle](https://developer.android.com/reference/android/os/Bundle.html).
+
+**Return**
+This SnackProgressBar.
+

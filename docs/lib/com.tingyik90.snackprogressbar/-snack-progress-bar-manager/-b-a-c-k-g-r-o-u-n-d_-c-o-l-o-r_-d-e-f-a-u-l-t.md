@@ -2,7 +2,7 @@
 
 # BACKGROUND_COLOR_DEFAULT
 
-`@JvmField val BACKGROUND_COLOR_DEFAULT: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)
+`val BACKGROUND_COLOR_DEFAULT: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)
 
 Default SnackProgressBar background color as per Material Design.
 

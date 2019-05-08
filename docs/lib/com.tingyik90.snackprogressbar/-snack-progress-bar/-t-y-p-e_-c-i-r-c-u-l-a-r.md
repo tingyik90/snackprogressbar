@@ -4,5 +4,5 @@
 
 `const val TYPE_CIRCULAR: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)
 
-SnackProgressBar layout with message and circular progressBar.
+SnackProgressBar layout with message and circular ProgressBar.
 

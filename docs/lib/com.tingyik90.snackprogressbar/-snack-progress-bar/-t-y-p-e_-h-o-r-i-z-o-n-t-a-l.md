@@ -4,5 +4,5 @@
 
 `const val TYPE_HORIZONTAL: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)
 
-SnackProgressBar layout with message and horizontal progressBar.
+SnackProgressBar layout with message and horizontal ProgressBar.
 

@@ -9,3 +9,7 @@ Sets whether user input is allowed. Setting to FALSE will display an OverlayLayo
 ### Parameters
 
 `allowUserInput` - Whether to allow user input. Default = FALSE.
+
+**Return**
+This SnackProgressBar.
+

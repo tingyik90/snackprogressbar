@@ -6,3 +6,6 @@
 
 Gets the additional bundle of SnackProgressBar. This value may be null.
 
+**Return**
+Any additional information attached to this SnackProgressBar via [Bundle](https://developer.android.com/reference/android/os/Bundle.html).
+

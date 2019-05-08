@@ -9,3 +9,8 @@ Sets the action text color.
 ### Parameters
 
 `colorId` - R.color id.
+
+**See Also**
+
+[ACTION_COLOR_DEFAULT](-a-c-t-i-o-n_-c-o-l-o-r_-d-e-f-a-u-l-t.md)
+

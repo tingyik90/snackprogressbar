@@ -8,5 +8,4 @@ Sets the type of SnackProgressBar.
 
 ### Parameters
 
-`type` - SnackProgressBar of either
-[TYPE_NORMAL](-t-y-p-e_-n-o-r-m-a-l.md), [TYPE_HORIZONTAL](-t-y-p-e_-h-o-r-i-z-o-n-t-a-l.md) or [TYPE_CIRCULAR](-t-y-p-e_-c-i-r-c-u-l-a-r.md)
+`type` - SnackProgressBar of either [TYPE_NORMAL](-t-y-p-e_-n-o-r-m-a-l.md), [TYPE_HORIZONTAL](-t-y-p-e_-h-o-r-i-z-o-n-t-a-l.md) or [TYPE_CIRCULAR](-t-y-p-e_-c-i-r-c-u-l-a-r.md)

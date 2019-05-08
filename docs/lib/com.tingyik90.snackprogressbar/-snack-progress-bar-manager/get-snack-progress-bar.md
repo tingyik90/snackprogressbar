@@ -8,7 +8,7 @@ Retrieves the SnackProgressBar that was previously added into SnackProgressBarMa
 
 ### Parameters
 
-`storeId` - OneUp of the SnackProgressBar stored in SnackProgressBarManager.
+`storeId` - StoreId of the SnackProgressBar stored in SnackProgressBarManager.
 
 **Return**
 SnackProgressBar of the storeId. Can be null.

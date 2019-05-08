@@ -9,3 +9,8 @@ Sets the ProgressText color.
 ### Parameters
 
 `colorId` - R.color id.
+
+**See Also**
+
+[PROGRESSTEXT_COLOR_DEFAULT](-p-r-o-g-r-e-s-s-t-e-x-t_-c-o-l-o-r_-d-e-f-a-u-l-t.md)
+

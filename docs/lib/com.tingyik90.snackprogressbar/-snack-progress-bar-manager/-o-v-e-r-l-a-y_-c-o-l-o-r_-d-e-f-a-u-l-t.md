@@ -2,7 +2,7 @@
 
 # OVERLAY_COLOR_DEFAULT
 
-`@JvmField val OVERLAY_COLOR_DEFAULT: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)
+`val OVERLAY_COLOR_DEFAULT: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)
 
 Default overlayLayout color i.e. android.R.color.white.
 

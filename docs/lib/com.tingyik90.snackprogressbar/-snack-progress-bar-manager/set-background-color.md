@@ -9,3 +9,8 @@ Sets the SnackProgressBar background color.
 ### Parameters
 
 `colorId` - R.color id.
+
+**See Also**
+
+[BACKGROUND_COLOR_DEFAULT](-b-a-c-k-g-r-o-u-n-d_-c-o-l-o-r_-d-e-f-a-u-l-t.md)
+

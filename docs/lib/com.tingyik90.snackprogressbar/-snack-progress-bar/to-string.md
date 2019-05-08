@@ -3,3 +3,6 @@
 # toString
 
 `fun toString(): `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)
+
+Returns a string representation of the SnackProgressBar.
+

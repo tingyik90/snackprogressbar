@@ -9,3 +9,8 @@ Sets the message text color.
 ### Parameters
 
 `colorId` - R.color id.
+
+**See Also**
+
+[MESSAGE_COLOR_DEFAULT](-m-e-s-s-a-g-e_-c-o-l-o-r_-d-e-f-a-u-l-t.md)
+

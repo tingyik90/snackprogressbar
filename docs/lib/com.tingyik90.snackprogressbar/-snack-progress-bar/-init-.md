@@ -4,6 +4,14 @@
 
 `SnackProgressBar(type: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`, message: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`)`
 
-Main class containing the display information of SnackProgressBar to be displayed
-via SnackProgressBarManager.
+Creates a SnackProgressBar.
+
+### Parameters
+
+`type` - SnackProgressBar of either [TYPE_NORMAL](-t-y-p-e_-n-o-r-m-a-l.md), [TYPE_HORIZONTAL](-t-y-p-e_-h-o-r-i-z-o-n-t-a-l.md) or [TYPE_CIRCULAR](-t-y-p-e_-c-i-r-c-u-l-a-r.md)
+
+`message` - Message of the SnackProgressBar.
+
+**Constructor**
+Creates a SnackProgressBar.
 

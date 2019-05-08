@@ -2,16 +2,20 @@
 
 # &lt;init&gt;
 
-`SnackProgressBarManager(view: `[`View`](https://developer.android.com/reference/android/view/View.html)`)`
+`SnackProgressBarManager(providedView: `[`View`](https://developer.android.com/reference/android/view/View.html)`, lifecycleOwner: LifecycleOwner? = null)`
 
-If possible, the root view of the activity should be provided and can be any type of layout.
-The constructor will loop and crawl up the view hierarchy to find a suitable parent view if non-root view is provided.
+Create an instance of SnackProgressBarManager.
 
 ### Parameters
 
-`view` - View to hold the SnackProgressBar.
+`providedView` - View provided to search for parent view to hold the SnackProgressBar.
+If possible, it should be the root view of the activity and can be any type of layout.
+The constructor will loop and crawl up the view hierarchy to find a suitable parent view.
+
+`lifecycleOwner` - The activity / fragment that this SnackProgressBarManager is attached to.
+This provides a quick way to automatically [dismissAll](dismiss-all.md) and remove [onDisplayListener](#) during onDestroy of
+the activity / fragment to prevent memory leak.
 
 **Constructor**
-If possible, the root view of the activity should be provided and can be any type of layout.
-The constructor will loop and crawl up the view hierarchy to find a suitable parent view if non-root view is provided.
+Create an instance of SnackProgressBarManager.
 

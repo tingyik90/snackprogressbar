@@ -9,3 +9,7 @@ Sets the icon of SnackProgressBar. Only a bitmap or a resId can be specified at 
 ### Parameters
 
 `iconResId` - The resource identifier of the icon to be displayed.
+
+**Return**
+This SnackProgressBar.
+

@@ -8,4 +8,8 @@ Sets whether to show progress in percentage.
 
 ### Parameters
 
-`showProgressPercentage` - Whether to show progressText. Default = FALSE.
+`showProgressPercentage` - Whether to show progress in percentage. Default = FALSE.
+
+**Return**
+This SnackProgressBar.
+

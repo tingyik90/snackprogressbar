@@ -9,3 +9,8 @@ Sets the overlayLayout color.
 ### Parameters
 
 `colorId` - R.color id.
+
+**See Also**
+
+[OVERLAY_COLOR_DEFAULT](-o-v-e-r-l-a-y_-c-o-l-o-r_-d-e-f-a-u-l-t.md)
+

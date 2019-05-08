@@ -4,8 +4,12 @@
 
 `fun setIsIndeterminate(isIndeterminate: `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html)`): `[`SnackProgressBar`](index.md)
 
-Sets whether the progressBar is indeterminate.
+Sets whether the ProgressBar is indeterminate.
 
 ### Parameters
 
-`isIndeterminate` - Whether the progressBar is indeterminate. Default = FALSE.
+`isIndeterminate` - Whether the ProgressBar is indeterminate. Default = FALSE.
+
+**Return**
+This SnackProgressBar.
+

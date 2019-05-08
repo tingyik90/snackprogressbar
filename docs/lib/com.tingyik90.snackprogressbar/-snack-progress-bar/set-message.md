@@ -8,4 +8,8 @@ Sets the message of SnackProgressBar.
 
 ### Parameters
 
-`message` - Message of SnackProgressBar.
+`message` - Message of be displayed.
+
+**Return**
+This SnackProgressBar.
+

@@ -9,3 +9,7 @@ Sets the max progress for determinate ProgressBar.
 ### Parameters
 
 `progressMax` - Max progress for determinate ProgressBar. Default = 100.
+
+**Return**
+This SnackProgressBar.
+

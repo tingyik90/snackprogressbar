@@ -10,7 +10,7 @@ Note: This does not change the queue.
 
 ### Parameters
 
-`storeId` - OneUp of the SnackProgressBar stored in SnackProgressBarManager.`fun updateTo(snackProgressBar: `[`SnackProgressBar`](../-snack-progress-bar/index.md)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)
+`storeId` - StoreId of the SnackProgressBar stored in SnackProgressBarManager.`fun updateTo(snackProgressBar: `[`SnackProgressBar`](../-snack-progress-bar/index.md)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)
 
 Updates the currently showing SnackProgressBar without dismissing it to the new SnackProgressBar
 i.e. updating without animation.

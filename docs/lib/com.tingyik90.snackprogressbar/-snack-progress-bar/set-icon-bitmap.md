@@ -8,4 +8,8 @@ Sets the icon of SnackProgressBar. Only a bitmap or a resId can be specified at 
 
 ### Parameters
 
-`bitmap` - Bitmap of icon.
+`bitmap` - Bitmap of the icon to be displayed.
+
+**Return**
+This SnackProgressBar.
+

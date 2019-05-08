@@ -12,7 +12,7 @@ by another SnackProgressBar with the same storeId.
 
 `snackProgressBar` - SnackProgressBar to be added.
 
-`storeId` - OneUp of the SnackProgressBar to be added.
+`storeId` - StoreId of the SnackProgressBar to be added.
 
 **See Also**
 
