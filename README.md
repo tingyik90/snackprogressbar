@@ -3,7 +3,7 @@
 # SnackProgressBar
 Enhanced Snackbar for Android.
 
-## Important
+## Important. Please don't use v6 now. It is unstable.
 - **v6.0** does not break migration from **v5.0**. Added the following features:
   - SnackProgressBarLayout is now public, so you can directly edit the layout in `OnDisplayListener.onLayoutInflated`.
   - WeakReference is now used for views to prevent memory leak.
