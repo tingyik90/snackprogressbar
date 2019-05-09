@@ -1,7 +1,7 @@
 [![](https://jitpack.io/v/tingyik90/snackprogressbar.svg)](https://jitpack.io/#tingyik90/snackprogressbar)
 
 # SnackProgressBar
-Enhanced Snackbar for Android.
+Enhanced Snackbar with ProgressBar for Android.
 
 ## Important
 Please do not use **v6.0**. It is a broken compilation due to new R8 shrinker. `minifyEnabled` has been turned to `false` since **v6.1**.
