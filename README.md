@@ -3,8 +3,11 @@
 # SnackProgressBar
 Enhanced Snackbar for Android.
 
-## Important. Please don't use v6 now. It is unstable.
-- **v6.0** does not break migration from **v5.0**. Added the following features:
+## Important
+Please do not use **v6.0**. It is a broken compilation due to new R8 shrinker. `minifyEnabled` has been turned to `false` since **v6.1**.
+
+## Versions
+- **v6.1** does not break migration from **v5.0**. Added the following features:
   - SnackProgressBarLayout is now public, so you can directly edit the layout in `OnDisplayListener.onLayoutInflated`.
   - WeakReference is now used for views to prevent memory leak.
   - LifeCycle Architecture is used to call `SnackProgressBarManager.disable()` automatically in `OnDestroy` to prevent memory leak.
