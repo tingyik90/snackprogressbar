@@ -1,6 +1,7 @@
 package com.tingyik90.snackprogressbar
 
 import android.annotation.SuppressLint
+import android.annotation.TargetApi
 import android.content.Context
 import android.util.AttributeSet
 import android.util.TypedValue
@@ -8,7 +9,10 @@ import android.view.MotionEvent
 import android.view.VelocityTracker
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.annotation.Keep
 import androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -32,7 +36,16 @@ class SnackProgressBarLayout : LinearLayout, ContentViewCallback {
 
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
+    @TargetApi(21)
+    constructor(
+        context: Context,
+        attrs: AttributeSet?,
+        defStyleAttr: Int,
+        defStyleRes: Int
+    ) : super(context, attrs, defStyleAttr, defStyleRes)
+
     /* companion object */
+    @Keep
     companion object {
 
         internal const val ACTION_DOWN = 123
@@ -277,7 +290,7 @@ class SnackProgressBarLayout : LinearLayout, ContentViewCallback {
         )
         val parent = parent as? View
         val bottomMargin = if (parent != null) {
-            val layoutParams = parent.layoutParams as FrameLayout.LayoutParams
+            val layoutParams = parent.layoutParams as MarginLayoutParams
             layoutParams.bottomMargin
         } else {
             0
