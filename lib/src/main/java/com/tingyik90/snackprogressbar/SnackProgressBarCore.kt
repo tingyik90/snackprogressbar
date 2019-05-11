@@ -42,7 +42,9 @@ internal class SnackProgressBarCore private constructor(
     private val runnable = Runnable { dismiss() }
 
     /* companion object */
+    @Keep
     companion object {
+
         /**
          * Prepares SnackProgressBarCore.
          *
@@ -83,6 +85,7 @@ internal class SnackProgressBarCore private constructor(
             snackProgressBarCore.updateTo(snackProgressBar)
             return snackProgressBarCore
         }
+
     }
 
     /**

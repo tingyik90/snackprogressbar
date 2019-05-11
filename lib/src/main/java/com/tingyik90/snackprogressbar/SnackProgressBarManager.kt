@@ -57,6 +57,9 @@ class SnackProgressBarManager(providedView: View, lifecycleOwner: LifecycleOwner
     }
 
     /* companion object */
+    // @Keep annotation is required to prevent proguard from removing the companion object.
+    // See https://stackoverflow.com/a/53863656/3584439.
+    @Keep
     companion object {
 
         @Retention(AnnotationRetention.SOURCE)
@@ -112,6 +115,7 @@ class SnackProgressBarManager(providedView: View, lifecycleOwner: LifecycleOwner
          * Default displayId
          */
         private const val NO_DISPLAY_ID = -1
+
     }
 
     /* parameters */

@@ -26,7 +26,9 @@ class SnackProgressBar(@SnackProgressBarType private var type: Int, private var 
     annotation class SnackProgressBarType
 
     /* companion object */
+    @Keep
     companion object {
+
         /**
          * SnackProgressBar layout with message only.
          */
@@ -39,8 +41,11 @@ class SnackProgressBar(@SnackProgressBarType private var type: Int, private var 
          * SnackProgressBar layout with message and circular ProgressBar.
          */
         const val TYPE_CIRCULAR = 300
-
+        /**
+         * Placeholder for no icon.
+         */
         internal const val DEFAULT_ICON_RES_ID = -1
+
     }
 
     /**
