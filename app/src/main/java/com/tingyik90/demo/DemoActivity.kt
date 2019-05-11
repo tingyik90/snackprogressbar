@@ -58,7 +58,7 @@ class DemoActivity : AppCompatActivity() {
                     // You can also grab its parent so that the view floats above bottom navigation bar etc.
                     /*
                     val view = snackProgressBarLayout.parent as View
-                    val params = view.layoutParams as FrameLayout.LayoutParams
+                    val params = view.layoutParams as ViewGroup.MarginLayoutParams
                     params.setMargins(0,0,0, 200)
                     view.layoutParams = params
                      */
