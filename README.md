@@ -37,6 +37,18 @@ Watch the demo video at https://youtu.be/dbawFbr6iPk.
 
 ## Getting Started
 
+## Before you begin
+You must have `colorAccent` declared in `colors.xml` file in your `res` folder. This library needs this value to apply proper styling to SnackProgressBar. Example:
+
+```xml
+res/values/colors.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorAccent">@android:color/holo_red_dark</color>
+</resources>
+```
+
 ### SnackProgressBarManager
 Start by creating an instance of SnackProgressBarManager in your activity.
 If possible, the root view of the activity should be provided and can be any type of layout.
@@ -166,7 +178,7 @@ snackProgressBarManager.put(snackProgressBar, storeId)
 snackProgressBarManager.show(storeId, SnackProgressBarManager.LENGTH_LONG)
 ```
 
-Calling `show()` will put the SnackProgressBar into a queue, which will be shown after those in queue before it has been dismissed
+Calling `show()` will put the SnackProgressBar into a queue, which will be shown after those in queue before it have been dismissed
 (by user action or set showDuration).
 
 Note: If LENGTH_INDEFINITE is specified for the queued SnackProgressBar, adding a new SnackProgressBar into the queue will cause 
