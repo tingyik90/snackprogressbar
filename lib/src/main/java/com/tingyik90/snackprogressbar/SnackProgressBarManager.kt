@@ -310,6 +310,7 @@ class SnackProgressBarManager(providedView: View, lifecycleOwner: LifecycleOwner
      */
     fun dismiss() {
         currentCore?.dismiss()
+        currentCore = null
         nextQueue()
     }
 
@@ -321,6 +322,7 @@ class SnackProgressBarManager(providedView: View, lifecycleOwner: LifecycleOwner
         // reset queue before dismissing currentCore to prevent next in queue from showing
         resetQueue()
         currentCore?.dismiss()
+        currentCore = null
     }
 
     /**
@@ -566,8 +568,6 @@ class SnackProgressBarManager(providedView: View, lifecycleOwner: LifecycleOwner
                         .setMaxLines(maxLines)
                         .addCallback(object : BaseTransientBottomBar.BaseCallback<SnackProgressBarCore>() {
                             override fun onShown(snackProgressBarCore: SnackProgressBarCore) {
-                                // set current
-                                currentCore = snackProgressBarCore
                                 // callback onDisplayListener
                                 onDisplayListener?.onShown(snackProgressBarCore.getSnackProgressBar(), onDisplayId)
                             }
@@ -575,8 +575,6 @@ class SnackProgressBarManager(providedView: View, lifecycleOwner: LifecycleOwner
                             override fun onDismissed(snackProgressBarCore: SnackProgressBarCore, event: Int) {
                                 // remove overlayLayout
                                 snackProgressBarCore.removeOverlayLayout()
-                                // reset current
-                                currentCore = null
                                 // callback onDisplayListener
                                 onDisplayListener?.onDismissed(snackProgressBarCore.getSnackProgressBar(), onDisplayId)
                                 // play next if this item is dismissed automatically later
@@ -596,6 +594,7 @@ class SnackProgressBarManager(providedView: View, lifecycleOwner: LifecycleOwner
                     snackProgressBarCore.getSnackProgressBar(),
                     onDisplayId
                 )
+                currentCore = snackProgressBarCore
                 snackProgressBarCore.show()
             } else {
                 // ParentView has been GCed, don't show anymore
