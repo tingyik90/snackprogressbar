@@ -4,10 +4,10 @@
 Enhanced Snackbar with ProgressBar for Android.
 
 ## Important
-Please do not use **v6.0**. It is a broken compilation due to new R8 shrinker. `minifyEnabled` has been turned to `false` since **v6.1**.
+Please do not use **v6.0** and **v6.1** due to issue #20 and #23.
 
 ## Versions
-- **v6.1** does not break migration from **v5.0**. Added the following features:
+- **v6.1.1** does not break migration from **v5.0**. Added the following features:
   - SnackProgressBarLayout is now public, so you can directly edit the layout in `OnDisplayListener.onLayoutInflated`.
   - WeakReference is now used for views to prevent memory leak.
   - LifeCycle Architecture is used to call `SnackProgressBarManager.disable()` automatically in `OnDestroy` to prevent memory leak.
@@ -36,6 +36,16 @@ Please do not use **v6.0**. It is a broken compilation due to new R8 shrinker. `
 Watch the demo video at https://youtu.be/dbawFbr6iPk.
 
 ## Getting Started
+You must have `colorAccent` declared in `colors.xml` file in your `res` folder. This library needs this value to apply proper styling to SnackProgressBar. Example:
+
+```xml
+res/values/colors.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorAccent">@android:color/holo_red_dark</color>
+</resources>
+```
 
 ### SnackProgressBarManager
 Start by creating an instance of SnackProgressBarManager in your activity.
@@ -166,8 +176,7 @@ snackProgressBarManager.put(snackProgressBar, storeId)
 snackProgressBarManager.show(storeId, SnackProgressBarManager.LENGTH_LONG)
 ```
 
-Calling `show()` will put the SnackProgressBar into a queue, which will be shown after those in queue before it has been dismissed
-(by user action or set showDuration).
+Calling show() will put the SnackProgressBar into a queue. It will be shown after other queued SnackProgressBars.
 
 Note: If LENGTH_INDEFINITE is specified for the queued SnackProgressBar, adding a new SnackProgressBar into the queue will cause 
 the previous SnackProgressBar to use LENGTH_SHORT instead, dismissed and then show the new SnackProgressBar.
