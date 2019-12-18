@@ -18,6 +18,16 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    task androidSourcesJar(type: Jar) {
+        from android.sourceSets.main.java.source
+        classifier = 'sources'
+    }
+
+    artifacts {
+        archives androidSourcesJar
+    }
+
 }
 
 dependencies {
