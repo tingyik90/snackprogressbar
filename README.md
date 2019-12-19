@@ -4,7 +4,7 @@
 Enhanced Snackbar with ProgressBar for Android.
 
 ## Important
-Please do not use **v6.0** and **v6.1** due to issue #20 and #23.
+Please do not use **v6.0** and **v6.1** due to issue [#20](https://github.com/tingyik90/snackprogressbar/issues/20) and [#23](https://github.com/tingyik90/snackprogressbar/issues/23).
 
 ## Versions
 - **v6.1.1+** does not break migration from **v5.0**. Added the following features:
@@ -178,8 +178,7 @@ snackProgressBarManager.show(storeId, SnackProgressBarManager.LENGTH_LONG)
 
 Calling show() will put the SnackProgressBar into a queue. It will be shown after other queued SnackProgressBars.
 
-Note: If LENGTH_INDEFINITE is specified for the queued SnackProgressBar, adding a new SnackProgressBar into the queue will cause 
-the previous SnackProgressBar to use LENGTH_SHORT instead, dismissed and then show the new SnackProgressBar.
+Note: Starting v6.2.0, if LENGTH_INDEFINITE is specified for the queued SnackProgressBar, adding a new SnackProgressBar into the queue will cause the previous SnackProgressBar to be dismissed after showing completely. Prior to that, the SnackProgressBar will be dismissed after LENGTH_SHORT and then show the new SnackProgressBar, but this is counter-intuitive and causes issue [#26](https://github.com/tingyik90/snackprogressbar/issues/26) and [#28](https://github.com/tingyik90/snackprogressbar/issues/28).
 
 ### Update
 Calling `show()` will always animate the hiding and showing of SnackProgressBar between queue. Use `updateTo()` instead to modify the
