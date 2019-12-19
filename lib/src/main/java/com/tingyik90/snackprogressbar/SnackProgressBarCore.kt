@@ -89,6 +89,13 @@ internal class SnackProgressBarCore private constructor(
     }
 
     /**
+     * Gets the show duration.
+     */
+    internal fun getShowDuration(): Int {
+        return showDuration
+    }
+
+    /**
      * Gets the attached snackProgressBar.
      */
     internal fun getSnackProgressBar(): SnackProgressBar {
@@ -287,6 +294,8 @@ internal class SnackProgressBarCore private constructor(
         snackProgressBarLayout.actionNextLineText.text = action.toUpperCase()
         // Set the onClickListener
         val onClickListener = View.OnClickListener {
+            // Remove the dismiss callback to avoid calling it twice
+            handler.removeCallbacks(runnable)
             onActionClickListener?.onActionClick()
             dismiss()
         }

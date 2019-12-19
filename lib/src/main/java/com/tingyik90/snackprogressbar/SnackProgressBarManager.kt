@@ -538,15 +538,8 @@ class SnackProgressBarManager(providedView: View, lifecycleOwner: LifecycleOwner
                 currentQueue = queue
                 val snackProgressBar = queueBars[queue]
                 val onDisplayId = queueOnDisplayIds[queue]
-                var duration = queueDurations[queue]
-                // Change duration to LENGTH_SHORT if is not last item
-                if (duration == LENGTH_INDEFINITE) {
-                    if (queue < queueBars.size - 1) {
-                        duration = LENGTH_SHORT
-                    }
-                }
+                val duration = queueDurations[queue]
                 // Create SnackProgressBarCore
-                val finalDuration = duration
                 val finalViewsToMove = mutableListOf<View>()
                 viewsToMove?.forEach {
                     val view = it.get()
@@ -570,6 +563,11 @@ class SnackProgressBarManager(providedView: View, lifecycleOwner: LifecycleOwner
                             override fun onShown(snackProgressBarCore: SnackProgressBarCore) {
                                 // callback onDisplayListener
                                 onDisplayListener?.onShown(snackProgressBarCore.getSnackProgressBar(), onDisplayId)
+                                // play next item if this item is going to show indefinitely
+                                // if next item is empty, this will reset queue
+                                if (snackProgressBarCore.getShowDuration() == LENGTH_INDEFINITE) {
+                                    nextQueue()
+                                }
                             }
 
                             override fun onDismissed(snackProgressBarCore: SnackProgressBarCore, event: Int) {
@@ -578,15 +576,11 @@ class SnackProgressBarManager(providedView: View, lifecycleOwner: LifecycleOwner
                                 // callback onDisplayListener
                                 onDisplayListener?.onDismissed(snackProgressBarCore.getSnackProgressBar(), onDisplayId)
                                 // play next if this item is dismissed automatically later
-                                if (finalDuration != LENGTH_INDEFINITE) {
+                                if (snackProgressBarCore.getShowDuration() != LENGTH_INDEFINITE) {
                                     nextQueue()
                                 }
                             }
                         })
-                // Reset queue if this is last item in queue with LENGTH_INDEFINITE
-                if (duration == LENGTH_INDEFINITE) {
-                    resetQueue()
-                }
                 // Allow users to manipulate the view
                 onDisplayListener?.onLayoutInflated(
                     snackProgressBarCore.snackProgressBarLayout,
