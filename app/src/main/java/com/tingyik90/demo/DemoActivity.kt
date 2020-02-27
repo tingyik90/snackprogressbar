@@ -35,7 +35,7 @@ class DemoActivity : AppCompatActivity() {
             // (Optional) Set the view which will animate with SnackProgressBar e.g. FAB when CoordinatorLayout is not used
             .setViewToMove(floatingActionButton)
             // (Optional) Change progressBar color, default = R.color.colorAccent
-            .setProgressBarColor(R.color.colorAccent)
+            .setProgressBarColor(android.R.color.holo_green_light)
             // (Optional) Change background color, default = BACKGROUND_COLOR_DEFAULT (#FF323232)
             .setBackgroundColor(SnackProgressBarManager.BACKGROUND_COLOR_DEFAULT)
             // (Optional) Change text size, default = 14sp

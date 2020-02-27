@@ -3,6 +3,8 @@ package com.tingyik90.snackprogressbar
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.content.Context
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.MotionEvent
@@ -133,17 +135,21 @@ class SnackProgressBarLayout : LinearLayout, ContentViewCallback {
         messageText.setTextColor(ContextCompat.getColor(context, messageTextColor))
         actionText.setTextColor(ContextCompat.getColor(context, actionTextColor))
         actionNextLineText.setTextColor(ContextCompat.getColor(context, actionTextColor))
-        horizontalProgressBar.progressDrawable.setColorFilter(
-            ContextCompat.getColor(context, progressBarColor), android.graphics.PorterDuff.Mode.SRC_IN
+        horizontalProgressBar.progressDrawable.colorFilter = PorterDuffColorFilter(
+            ContextCompat.getColor(context, progressBarColor),
+            PorterDuff.Mode.SRC_IN
         )
-        circularDeterminateProgressBar.progressDrawable.setColorFilter(
-            ContextCompat.getColor(context, progressBarColor), android.graphics.PorterDuff.Mode.SRC_IN
+        circularDeterminateProgressBar.progressDrawable.colorFilter = PorterDuffColorFilter(
+            ContextCompat.getColor(context, progressBarColor),
+            PorterDuff.Mode.SRC_IN
         )
-        horizontalProgressBar.indeterminateDrawable.setColorFilter(
-            ContextCompat.getColor(context, progressBarColor), android.graphics.PorterDuff.Mode.SRC_IN
+        horizontalProgressBar.indeterminateDrawable.colorFilter = PorterDuffColorFilter(
+            ContextCompat.getColor(context, progressBarColor),
+            PorterDuff.Mode.SRC_IN
         )
-        circularIndeterminateProgressBar.indeterminateDrawable.setColorFilter(
-            ContextCompat.getColor(context, progressBarColor), android.graphics.PorterDuff.Mode.SRC_IN
+        circularIndeterminateProgressBar.indeterminateDrawable.colorFilter = PorterDuffColorFilter(
+            ContextCompat.getColor(context, progressBarColor),
+            PorterDuff.Mode.SRC_IN
         )
         progressText.setTextColor(ContextCompat.getColor(context, progressTextColor))
         progressTextCircular.setTextColor(ContextCompat.getColor(context, progressTextColor))
