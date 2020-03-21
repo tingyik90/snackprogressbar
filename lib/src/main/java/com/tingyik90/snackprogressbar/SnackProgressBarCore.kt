@@ -1,5 +1,6 @@
 package com.tingyik90.snackprogressbar
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Handler
 import android.view.LayoutInflater
@@ -82,6 +83,7 @@ internal class SnackProgressBarCore private constructor(
                 showDuration,
                 snackProgressBar
             )
+            snackProgressBarCore.behavior = SwipeBehavior()
             snackProgressBarCore.updateTo(snackProgressBar)
             return snackProgressBarCore
         }
@@ -286,6 +288,7 @@ internal class SnackProgressBarCore private constructor(
     /**
      * Sets the action to be displayed.
      */
+    @SuppressLint("DefaultLocale")
     private fun setAction(): SnackProgressBarCore {
         val action = snackProgressBar.getAction()
         val onActionClickListener = snackProgressBar.getOnActionClickListener()
@@ -336,6 +339,7 @@ internal class SnackProgressBarCore private constructor(
      * Sets whether user can swipe to dismiss.
      */
     private fun setSwipeToDismiss(): SnackProgressBarCore {
+        (behavior as SwipeBehavior).canSwipe = snackProgressBar.isSwipeToDismiss()
         snackProgressBarLayout.setSwipeToDismiss(snackProgressBar.isSwipeToDismiss())
         return this
     }
@@ -390,4 +394,18 @@ internal class SnackProgressBarCore private constructor(
             }
         })
     }
+
+    /**
+     * Custom behavior to toggle swipeToDismiss in [CoordinatorLayout].
+     */
+    private class SwipeBehavior : Behavior() {
+
+        var canSwipe = true
+
+        override fun canSwipeDismissView(child: View): Boolean {
+            return super.canSwipeDismissView(child) && canSwipe
+        }
+
+    }
+
 }
