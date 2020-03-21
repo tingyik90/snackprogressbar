@@ -10,20 +10,19 @@ import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.VelocityTracker
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.annotation.Keep
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import com.google.android.material.snackbar.ContentViewCallback
 import kotlinx.android.synthetic.main.snackprogressbar.view.*
 import java.lang.ref.WeakReference
+import kotlin.math.abs
 
 /**
  * Layout class for SnackProgressBar.
@@ -53,6 +52,7 @@ class SnackProgressBarLayout : LinearLayout, ContentViewCallback {
         internal const val ACTION_DOWN = 123
         internal const val SWIPE_OUT = 456
         internal const val SWIPE_IN = 789
+
         // Animation duration as per BaseTransientBottomBar
         internal const val ANIMATION_DURATION = 250L
 
@@ -76,13 +76,14 @@ class SnackProgressBarLayout : LinearLayout, ContentViewCallback {
     private val startAlphaSwipeDistance = 0.1f
     private val endAlphaSwipeDistance = 0.6f
     private val swipeOutVelocity = 800f
+
     // Height as per Material Design
     private val heightSingle = resources.getDimension(R.dimen.snackProgressBar_height_single).toInt()
     private val heightMulti = resources.getDimension(R.dimen.snackProgressBar_height_multi).toInt()
     private val heightActionNextLine = resources.getDimension(R.dimen.snackProgressBar_height_actionNextLine).toInt()
+
     // Use fixed dp for comparison purpose
     private val defaultTextSizeDp = resources.getDimension(R.dimen.text_body_dp).toInt()
-    private var isCoordinatorLayout: Boolean = false
     private var swipeToDismiss: Boolean = false
     private var viewsToMove: Array<WeakReference<View>>? = null
     private var onBarTouchListener: OnBarTouchListener? = null
@@ -106,6 +107,7 @@ class SnackProgressBarLayout : LinearLayout, ContentViewCallback {
      */
     internal fun setOnBarTouchListener(onBarTouchListener: OnBarTouchListener?) {
         this.onBarTouchListener = onBarTouchListener
+        setOnTouchListener()
     }
 
     /**
@@ -181,7 +183,6 @@ class SnackProgressBarLayout : LinearLayout, ContentViewCallback {
      * Sets whether user can swipe to dismiss.
      *
      * @param swipeToDismiss Whether user can swipe to dismiss.
-     * @see configureSwipeToDismiss
      */
     internal fun setSwipeToDismiss(swipeToDismiss: Boolean) {
         this.swipeToDismiss = swipeToDismiss
@@ -260,9 +261,6 @@ class SnackProgressBarLayout : LinearLayout, ContentViewCallback {
         // Clear the padding of the parent that hold this view
         val parentView = parent as View
         parentView.setPadding(0, 0, 0, 0)
-        // Check if it is CoordinatorLayout and configure swipe to dismiss
-        isCoordinatorLayout = parentView.parent is CoordinatorLayout
-        configureSwipeToDismiss()
     }
 
     /**
@@ -348,36 +346,31 @@ class SnackProgressBarLayout : LinearLayout, ContentViewCallback {
     }
 
     /**
-     * Configures swipe to dismiss behaviour.
-     */
-    private fun configureSwipeToDismiss() {
-        if (swipeToDismiss) {
-            // Attach touch listener if it is not a CoordinatorLayout to allow extra features
-            if (!isCoordinatorLayout) {
-                setOnTouchListener()
-            }
-        } else {
-            // Remove default behaviour specified in BaseTransientBottomBar for CoordinatorLayout
-            if (isCoordinatorLayout) {
-                val parentView = parent as ViewGroup
-                val layoutParams = parentView.layoutParams as CoordinatorLayout.LayoutParams
-                layoutParams.behavior = null
-            }
-        }
-    }
-
-    /**
      * Sets onTouchListener to allow swipe to dismiss behaviour for layouts other than CoordinatorLayout.
      */
     @SuppressLint("ClickableViewAccessibility")
     private fun setOnTouchListener() {
         backgroundLayout.setOnTouchListener(object : OnTouchListener {
-            private val parentView = parent as View
+
             private var startX: Float = 0f
             private var endX: Float = 0f
-            private lateinit var velocityTracker: VelocityTracker
+            private var velocityTracker: VelocityTracker? = null
 
-            override fun onTouch(v: View, event: MotionEvent): Boolean {
+            @SuppressLint("Recycle")
+            private fun getVelocityTracker(): VelocityTracker {
+                if (velocityTracker == null) {
+                    velocityTracker = VelocityTracker.obtain()
+                }
+                return velocityTracker!!
+            }
+
+            private fun recycleVelocityTracker() {
+                velocityTracker?.recycle()
+                velocityTracker = null
+            }
+
+            override fun onTouch(view: View, event: MotionEvent): Boolean {
+                if (!swipeToDismiss) return true
                 val index = event.actionIndex
                 val pointerId = event.getPointerId(index)
                 when (event.actionMasked) {
@@ -387,20 +380,20 @@ class SnackProgressBarLayout : LinearLayout, ContentViewCallback {
                         // Track initial coordinate
                         startX = event.rawX
                         // Track velocity
-                        velocityTracker = VelocityTracker.obtain()
-                        velocityTracker.addMovement(event)
+                        getVelocityTracker().addMovement(event)
                     }
                     MotionEvent.ACTION_MOVE -> {
                         // Track velocity
-                        velocityTracker.addMovement(event)
+                        getVelocityTracker().addMovement(event)
                         // Track move coordinate
                         val moveX = event.rawX
                         // Set translationX
                         val deltaX = moveX - startX
+                        val parentView = view.parent as View
                         parentView.translationX = deltaX
                         // Animate alpha as per behaviour specified in BaseTransientBottomBar for CoordinatorLayout
                         val totalWidth = parentView.measuredWidth
-                        val fractionTravelled = Math.abs(deltaX / totalWidth)
+                        val fractionTravelled = abs(deltaX / totalWidth)
                         when {
                             fractionTravelled < startAlphaSwipeDistance -> parentView.alpha = 1f
                             fractionTravelled > endAlphaSwipeDistance -> parentView.alpha = 0f
@@ -412,17 +405,19 @@ class SnackProgressBarLayout : LinearLayout, ContentViewCallback {
                         // Track final coordinate
                         endX = event.rawX
                         // Get velocity and return resources
+                        val velocityTracker = getVelocityTracker()
                         velocityTracker.computeCurrentVelocity(1000)
-                        val velocity = Math.abs(velocityTracker.getXVelocity(pointerId))
-                        velocityTracker.recycle()
+                        val velocity = abs(velocityTracker.getXVelocity(pointerId))
+                        recycleVelocityTracker()
                         // Animate layout
                         var toSwipeOut = false
+                        val parentView = view.parent as View
                         // Swipe out if layout moved more than half of the screen
-                        if (Math.abs(endX - startX) / parentView.width > 0.5) {
+                        if (abs(endX - startX) / parentView.width > 0.5) {
                             toSwipeOut = true
                         }
                         // Swipe out if velocity is high
-                        if (Math.abs(velocity) > swipeOutVelocity) {
+                        if (abs(velocity) > swipeOutVelocity) {
                             toSwipeOut = true
                         }
                         if (toSwipeOut) {
@@ -432,7 +427,7 @@ class SnackProgressBarLayout : LinearLayout, ContentViewCallback {
                             swipeIn(endX - startX)
                         }
                         // To satisfy android accessibility
-                        v.performClick()
+                        view.performClick()
                     }
                 }
                 return true
