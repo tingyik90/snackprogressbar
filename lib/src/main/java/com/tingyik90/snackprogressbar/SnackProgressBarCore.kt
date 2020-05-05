@@ -137,6 +137,17 @@ internal class SnackProgressBarCore private constructor(
     }
 
     /**
+     * Sets whether to use rounded corner background for SnackProgressBar according to new Material Design.
+     * Note that the background cannot be changed after being shown.
+     *
+     * @param useRoundedCornerBackground Whether to use rounded corner background for SnackProgressBar.
+     */
+    internal fun useRoundedCornerBackground(useRoundedCornerBackground: Boolean): SnackProgressBarCore {
+        snackProgressBarLayout.useRoundedCornerBackground(useRoundedCornerBackground)
+        return this
+    }
+
+    /**
      * Updates the color of the layout.
      *
      * @param backgroundColor  R.color id.

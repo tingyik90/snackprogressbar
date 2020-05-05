@@ -73,44 +73,53 @@ class SnackProgressBarManager(providedView: View, lifecycleOwner: LifecycleOwner
          * if there is another SnackProgressBar in queue before and after.
          */
         const val LENGTH_INDEFINITE = BaseTransientBottomBar.LENGTH_INDEFINITE
+
         /**
          * Show the SnackProgressBar for a short period of time.
          */
         const val LENGTH_SHORT = BaseTransientBottomBar.LENGTH_SHORT
+
         /**
          * Show the SnackProgressBar for a long period of time.
          */
         const val LENGTH_LONG = BaseTransientBottomBar.LENGTH_LONG
+
         /**
          * Default SnackProgressBar background color as per Material Design.
          */
         @JvmField
         val BACKGROUND_COLOR_DEFAULT = R.color.background
+
         /**
          * Default message text color as per Material Design.
          */
         @JvmField
         val MESSAGE_COLOR_DEFAULT = R.color.textWhitePrimary
+
         /**
          * Default action text color as per Material Design i.e. R.color.colorAccent.
          */
         @JvmField
         val ACTION_COLOR_DEFAULT = R.color.colorAccent
+
         /**
          * Default progressBar color as per Material Design i.e. R.color.colorAccent.
          */
         @JvmField
         val PROGRESSBAR_COLOR_DEFAULT = R.color.colorAccent
+
         /**
          * Default progressText color as per Material Design.
          */
         @JvmField
         val PROGRESSTEXT_COLOR_DEFAULT = R.color.textWhitePrimary
+
         /**
          * Default overlayLayout color i.e. android.R.color.white.
          */
         @JvmField
         val OVERLAY_COLOR_DEFAULT = android.R.color.white
+
         /**
          * Default displayId
          */
@@ -127,6 +136,7 @@ class SnackProgressBarManager(providedView: View, lifecycleOwner: LifecycleOwner
     private var currentCore: SnackProgressBarCore? = null
     private var parentView = WeakReference(findSuitableParent(providedView))
     private var viewsToMove: Array<WeakReference<View>>? = null
+    private var useRoundedCornerBackground = false
     private var backgroundColor = BACKGROUND_COLOR_DEFAULT
     private var messageTextColor = MESSAGE_COLOR_DEFAULT
     private var actionTextColor = ACTION_COLOR_DEFAULT
@@ -489,6 +499,17 @@ class SnackProgressBarManager(providedView: View, lifecycleOwner: LifecycleOwner
     }
 
     /**
+     * Sets whether to use rounded corner background for SnackProgressBar according to new Material Design.
+     * Note that the background cannot be changed after being shown.
+     *
+     * @param useRoundedCornerBackground Whether to use rounded corner background for SnackProgressBar.
+     */
+    fun useRoundedCornerBackground(useRoundedCornerBackground: Boolean): SnackProgressBarManager {
+        this.useRoundedCornerBackground = useRoundedCornerBackground
+        return this
+    }
+
+    /**
      * Adds the SnackProgressBar to queue.
      *
      * @param snackProgressBar SnackProgressBar to be added to queue.
@@ -550,6 +571,8 @@ class SnackProgressBarManager(providedView: View, lifecycleOwner: LifecycleOwner
                 val snackProgressBarCore =
                     SnackProgressBarCore.make(parentView, snackProgressBar, duration, finalViewsToMove.toTypedArray())
                         .setOverlayLayout(overlayColor, overlayLayoutAlpha)
+                        // Set background before the colors as the background cannot be changed after being shown
+                        .useRoundedCornerBackground(useRoundedCornerBackground)
                         .setColor(
                             backgroundColor,
                             messageTextColor,

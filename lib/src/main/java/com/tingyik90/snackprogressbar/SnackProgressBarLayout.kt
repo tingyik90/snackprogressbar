@@ -10,10 +10,7 @@ import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.VelocityTracker
 import android.view.View
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.ProgressBar
-import android.widget.TextView
+import android.widget.*
 import androidx.annotation.ColorRes
 import androidx.annotation.Keep
 import androidx.core.content.ContextCompat
@@ -60,6 +57,7 @@ class SnackProgressBarLayout : LinearLayout, ContentViewCallback {
 
     /* views */
     val backgroundLayout: SnackProgressBarLayout by lazy { snackProgressBar_layout_background }
+    val roundedBackgroundLayout: LinearLayout by lazy { snackProgressBar_layout_roundedBackground }
     val mainLayout: LinearLayout by lazy { snackProgressBar_layout_main }
     val iconImage: ImageView by lazy { snackProgressBar_img_icon }
     val messageText: TextView by lazy { snackProgressBar_txt_message }
@@ -120,6 +118,25 @@ class SnackProgressBarLayout : LinearLayout, ContentViewCallback {
     }
 
     /**
+     * Sets whether to use rounded corner background for SnackProgressBar according to new Material Design.
+     * Note that the background cannot be changed after being shown.
+     *
+     * @param useRoundedCornerBackground Whether to use rounded corner background for SnackProgressBar.
+     */
+    fun useRoundedCornerBackground(useRoundedCornerBackground: Boolean) {
+        if (useRoundedCornerBackground) {
+            roundedBackgroundLayout.background = ContextCompat.getDrawable(context, R.drawable.background_rounded)
+            val layoutParams = roundedBackgroundLayout.layoutParams as MarginLayoutParams
+            val margin =
+                TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8f, resources.displayMetrics).toInt()
+            layoutParams.setMargins(margin, 0, margin, margin)
+            roundedBackgroundLayout.layoutParams = layoutParams
+        } else {
+            roundedBackgroundLayout.background = null
+        }
+    }
+
+    /**
      * Updates the color of the layout.
      *
      * @param backgroundColor  R.color id.
@@ -133,7 +150,22 @@ class SnackProgressBarLayout : LinearLayout, ContentViewCallback {
         @ColorRes actionTextColor: Int, @ColorRes progressBarColor: Int,
         @ColorRes progressTextColor: Int
     ) {
-        backgroundLayout.setBackgroundColor(ContextCompat.getColor(context, backgroundColor))
+        // Always make sure the parent is transparent, else it will be black around the rounder corner drawable background
+        (backgroundLayout.parent as FrameLayout).setBackgroundColor(
+            ContextCompat.getColor(
+                context,
+                android.R.color.transparent
+            )
+        )
+        if (roundedBackgroundLayout.background == null) {
+            backgroundLayout.setBackgroundColor(ContextCompat.getColor(context, backgroundColor))
+        } else {
+            backgroundLayout.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent))
+            roundedBackgroundLayout.background.colorFilter = PorterDuffColorFilter(
+                ContextCompat.getColor(context, backgroundColor),
+                PorterDuff.Mode.SRC_IN
+            )
+        }
         messageText.setTextColor(ContextCompat.getColor(context, messageTextColor))
         actionText.setTextColor(ContextCompat.getColor(context, actionTextColor))
         actionNextLineText.setTextColor(ContextCompat.getColor(context, actionTextColor))

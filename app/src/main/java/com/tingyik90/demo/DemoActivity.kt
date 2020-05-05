@@ -42,6 +42,8 @@ class DemoActivity : AppCompatActivity() {
             .setTextSize(14f)
             // (Optional) Set max lines, default = 2
             .setMessageMaxLines(2)
+            // Use rounded corner background according to new Material Design.
+            .useRoundedCornerBackground(true)
             // (Optional) Register onDisplayListener
             .setOnDisplayListener(object : SnackProgressBarManager.OnDisplayListener {
                 override fun onLayoutInflated(
