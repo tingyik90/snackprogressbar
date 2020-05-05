@@ -7,6 +7,7 @@ Enhanced Snackbar with ProgressBar for Android.
 Please do not use **v6.0** and **v6.1** due to issue [#20](https://github.com/tingyik90/snackprogressbar/issues/20) and [#23](https://github.com/tingyik90/snackprogressbar/issues/23).
 
 ## Versions
+- **v6.4.0** added 'Rounded Corner Background' as per latest Material Design! To use it, call `SnackProgressBarManager.useRoundedCornerBackground(true)`. It is `false` by default.
 - **v6.1.1+** does not break migration from **v5.0**. Added the following features:
   - SnackProgressBarLayout is now public, so you can directly edit the layout in `OnDisplayListener.onLayoutInflated`.
   - WeakReference is now used for views to prevent memory leak.
