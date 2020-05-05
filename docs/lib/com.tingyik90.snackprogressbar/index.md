@@ -6,6 +6,6 @@
 
 | Name | Summary |
 |---|---|
-| [SnackProgressBar](-snack-progress-bar/index.md) | `class SnackProgressBar`<br>SnackProgressBar is the holder for information to be displayed via SnackProgressBarManager. |
-| [SnackProgressBarLayout](-snack-progress-bar-layout/index.md) | `class SnackProgressBarLayout : `[`LinearLayout`](https://developer.android.com/reference/android/widget/LinearLayout.html)`, ContentViewCallback`<br>Layout class for SnackProgressBar. |
-| [SnackProgressBarManager](-snack-progress-bar-manager/index.md) | `class SnackProgressBarManager : LifecycleObserver`<br>Manager class handling all the SnackProgressBars added. |
+| [SnackProgressBar](-snack-progress-bar/index.md) | SnackProgressBar is the holder for information to be displayed via SnackProgressBarManager.`class SnackProgressBar` |
+| [SnackProgressBarLayout](-snack-progress-bar-layout/index.md) | Layout class for SnackProgressBar.`class SnackProgressBarLayout : `[`LinearLayout`](https://developer.android.com/reference/android/widget/LinearLayout.html)`, ContentViewCallback` |
+| [SnackProgressBarManager](-snack-progress-bar-manager/index.md) | Manager class handling all the SnackProgressBars added.`class SnackProgressBarManager : LifecycleObserver` |

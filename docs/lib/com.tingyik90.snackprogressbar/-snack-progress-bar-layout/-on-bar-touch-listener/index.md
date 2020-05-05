@@ -10,4 +10,4 @@ Interface definition for a callback to be invoked when the SnackProgressBar is t
 
 | Name | Summary |
 |---|---|
-| [onTouch](on-touch.md) | `abstract fun onTouch(event: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)<br>Called when the SnackProgressBar is touched. |
+| [onTouch](on-touch.md) | Called when the SnackProgressBar is touched.`abstract fun onTouch(event: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |

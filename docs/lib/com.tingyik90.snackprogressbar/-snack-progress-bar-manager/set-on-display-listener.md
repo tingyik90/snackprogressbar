@@ -2,7 +2,7 @@
 
 # setOnDisplayListener
 
-`fun setOnDisplayListener(onDisplayListener: `[`SnackProgressBarManager.OnDisplayListener`](-on-display-listener/index.md)`?): `[`SnackProgressBarManager`](index.md)
+`fun setOnDisplayListener(onDisplayListener: OnDisplayListener?): `[`SnackProgressBarManager`](index.md)
 
 Registers a callback to be invoked when the SnackProgressBar is shown or dismissed.
 

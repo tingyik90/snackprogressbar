@@ -10,4 +10,4 @@ Interface definition for a callback to be invoked when an action is clicked.
 
 | Name | Summary |
 |---|---|
-| [onActionClick](on-action-click.md) | `abstract fun onActionClick(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)<br>Called when an action is clicked. |
+| [onActionClick](on-action-click.md) | Called when an action is clicked.`abstract fun onActionClick(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
