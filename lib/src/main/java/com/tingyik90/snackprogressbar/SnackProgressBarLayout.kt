@@ -342,6 +342,7 @@ class SnackProgressBarLayout : LinearLayout, ContentViewCallback {
             val viewToMove = it.get()
             if (viewToMove != null) {
                 ViewCompat.animate(viewToMove).translationY((-1 * (measuredHeight + bottomMargin)).toFloat())
+                    .setInterpolator(FastOutSlowInInterpolator())
                     .setDuration(ANIMATION_DURATION).start()
             }
         }
@@ -372,6 +373,7 @@ class SnackProgressBarLayout : LinearLayout, ContentViewCallback {
             val viewToMove = it.get()
             if (viewToMove != null) {
                 ViewCompat.animate(viewToMove).translationY(0f)
+                    .setInterpolator(FastOutSlowInInterpolator())
                     .setDuration(ANIMATION_DURATION).start()
             }
         }
