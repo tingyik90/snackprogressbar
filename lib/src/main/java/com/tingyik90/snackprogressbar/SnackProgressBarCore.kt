@@ -41,6 +41,7 @@ internal class SnackProgressBarCore private constructor(
     private val longDurationMillis = 2750
     private val handler = Handler()
     private val runnable = Runnable { dismiss() }
+    private var isActionClicked = false
 
     /* companion object */
     @Keep
@@ -308,10 +309,14 @@ internal class SnackProgressBarCore private constructor(
         snackProgressBarLayout.actionNextLineText.text = action.toUpperCase()
         // Set the onClickListener
         val onClickListener = View.OnClickListener {
-            // Remove the dismiss callback to avoid calling it twice
-            handler.removeCallbacks(runnable)
-            onActionClickListener?.onActionClick()
-            dismiss()
+            // To prevent multiple clicks on action
+            if (!isActionClicked) {
+                isActionClicked = true
+                // Remove the dismiss callback to avoid calling it twice
+                handler.removeCallbacks(runnable)
+                onActionClickListener?.onActionClick()
+                dismiss()
+            }
         }
         snackProgressBarLayout.actionText.setOnClickListener(onClickListener)
         snackProgressBarLayout.actionNextLineText.setOnClickListener(onClickListener)
